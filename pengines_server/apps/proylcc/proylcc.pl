@@ -33,6 +33,17 @@ put(Content, [RowN, ColN], _RowsClues, _ColsClues, Grid, NewGrid, 1, 1):-
 searchRightRowList(0,[X|_Xs],X).
 searchRightRowList(Index,[_X|Xs],Elem):- Index > 0, NewIndex is Index-1, searchRightRowList(NewIndex,Xs,Elem).
 
+
+%checkClues(+RowClues,+Row,+CurrentRowClue).
+checkClues([],[],0).
+
+
+checkClues(X,["#"|R],N):- N>0, NewN is N-1, checkClues(X, R, NewN).
+checkClues(X,[E|R],0):-E\="#", checkClues(X,R,0).
+
+checkClues([X|Xr],R,0):-checkClues(Xr,R,X).
+checkClues([],[E|R],0):-E\="#", checkClues([],R,0).
+
 put(Content, [RowN, ColN], RowsClues, _ColsClues, Grid, NewGrid, 1, 0):-
 	
 	replace(Row, RowN, NewRow, Grid, NewGrid),
@@ -42,7 +53,10 @@ put(Content, [RowN, ColN], RowsClues, _ColsClues, Grid, NewGrid, 1, 0):-
 		;
 	replace(_Cell, ColN, Content, Row, NewRow)),
 
-	searchRightRowList(RowN, RowClues, RowClueList).
+	searchRightRowList(RowN, RowClues, RowClueList),
+	checkClues(RowClueList, ).
+
+	.
 put(Content, [RowN, ColN], _RowsClues, _ColsClues, Grid, NewGrid, 0, 1).
 
 put(Content, [RowN, ColN], _RowsClues, _ColsClues, Grid, NewGrid, 0, 0):-
