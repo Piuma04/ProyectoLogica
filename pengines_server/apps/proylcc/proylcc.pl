@@ -18,23 +18,69 @@ replace(X, XIndex, Y, [Xi|Xs], [Xi|XsY]):-
     XIndexS is XIndex - 1,
     replace(X, XIndexS, Y, Xs, XsY).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% put(+Content, +Pos, +RowsClues, +ColsClues, +Grid, -NewGrid, -RowSat, -ColSat).
-%
+
+
+%searchClueIndex(+Index,+AllClueGridStructure,-IndexedClueGridStructure).
 searchClueIndex(0,[X|_Xs],X).
 searchClueIndex(Index,[_X|Xs],Elem):- Index > 0, NewIndex is Index-1, searchClueIndex(NewIndex,Xs,Elem).
+
 %checkClues(+RowClues,+Row,+CurrentRowClue).
 checkClues([],[],0).
-
 checkClues(X,["#"|R],N):- N>0, NewN is N-1, checkClues(X, R, NewN).
 checkClues(X,[E|R],0):-E\="#", checkClues(X,R,0).
-
 checkClues([X|Xr],R,0):-checkClues(Xr,R,X).
 checkClues([],[E|R],0):-E\="#", checkClues([],R,0).
 
+%searchColumn(+ColumnNumber,+Grid,-Column).
 searchColumn(_ColN, [], []).
 searchColumn(ColN,[X|Xs],[Y|Ys]):-searchClueIndex(ColN,X,Y),searchColumn(ColN,Xs,Ys).
+
+%
+% put(+Content, +Pos, +RowsClues, +ColsClues, +Grid, -NewGrid, -RowSat, -ColSat).
+%
+
+put(Content, [RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, 1, 1):-
+	
+	(replace(Cell, ColN, _, Row, NewRow),
+	Cell == Content
+		;
+	replace(_Cell, ColN, Content, Row, NewRow)),
+	
+	%check if columns are correct
+	searchColumn(ColN,NewGrid,NewColumn),
+	searchClueIndex(ColN, ColsClues, ColsClueList),
+	checkClues(ColsClueList, NewColumn,0),
+	
+	%check if rows are correct
+	searchClueIndex(RowN, RowsClues, RowsClueList),
+	checkClues(RowsClueList, NewRow,0).
+
+
+
+put(Content, [RowN, ColN], RowsClues, _ColsClues, Grid, NewGrid, 1, 0):-
+	
+	replace(Row, RowN, NewRow, Grid, NewGrid),
+	
+	(replace(Cell, ColN, _, Row, NewRow),
+	Cell == Content
+		;
+	replace(_Cell, ColN, Content, Row, NewRow)),
+
+	searchClueIndex(RowN, RowsClues, RowsClueList),
+	checkClues(RowsClueList, NewRow,0).
+
+put(Content, [RowN, ColN], _RowsClues, ColsClues, Grid, NewGrid, 0, 1):-
+replace(Row, RowN, NewRow, Grid, NewGrid),
+	
+	(replace(Cell, ColN, _, Row, NewRow),
+	Cell == Content
+		;
+	replace(_Cell, ColN, Content, Row, NewRow)),
+
+	searchColumn(ColN,NewGrid,NewColumn),
+	searchClueIndex(ColN, ColsClues, ColsClueList),
+	checkClues(ColsClueList, NewColumn,0).
+
 
 put(Content, [RowN, ColN], _RowsClues, _ColsClues, Grid, NewGrid, 0, 0):-
 	% NewGrid is the result of replacing the row Row in position RowN of Grid by a new row NewRow (not yet instantiated).
@@ -48,29 +94,6 @@ put(Content, [RowN, ColN], _RowsClues, _ColsClues, Grid, NewGrid, 0, 0):-
 	Cell == Content
 		;
 	replace(_Cell, ColN, Content, Row, NewRow)).
-put(Content, [RowN, ColN], RowsClues, _ColsClues, Grid, NewGrid, 1, 0):-
-	
-	replace(Row, RowN, NewRow, Grid, NewGrid),
-	
-	(replace(Cell, ColN, _, Row, NewRow),
-	Cell == Content
-		;
-	replace(_Cell, ColN, Content, Row, NewRow)),
 
-	searchClueIndex(RowN, RowsClues, RowsClueList),
-	checkClues(RowsClueList, NewRow,0).
-put(Content, [RowN, ColN], _RowsClues, ColsClues, Grid, NewGrid, 0, 1):-
-replace(Row, RowN, NewRow, Grid, NewGrid),
-	
-	(replace(Cell, ColN, _, Row, NewRow),
-	Cell == Content
-		;
-	replace(_Cell, ColN, Content, Row, NewRow)),
-	searchColumn(ColN,NewGrid,NewColumn),
-	searchClueIndex(ColN, ColsClues, ColsClueList),
-	checkClues(ColsClueList, NewColumn,0).
-put(Content, [RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, 1, 1):-
-	
-	put(Content, [RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, 0, 1),
 
-	put(Content, [RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, 1, 0).
+
