@@ -24,6 +24,7 @@ replace(X, XIndex, Y, [Xi|Xs], [Xi|XsY]):-
 searchClueIndex(0,[X|_Xs],X).
 searchClueIndex(Index,[_X|Xs],Elem):- Index > 0, NewIndex is Index-1, searchClueIndex(NewIndex,Xs,Elem).
 
+
 %checkClues(+RowClues,+Row,+CurrentRowClue).
 checkClues([],[],0).
 checkClues(X,["#"|R],N):- N>0, NewN is N-1, checkClues(X, R, NewN).
@@ -38,9 +39,9 @@ searchColumn(ColN,[X|Xs],[Y|Ys]):-searchClueIndex(ColN,X,Y),searchColumn(ColN,Xs
 %
 % put(+Content, +Pos, +RowsClues, +ColsClues, +Grid, -NewGrid, -RowSat, -ColSat).
 %
-
 put(Content, [RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, 1, 1):-
 	
+	replace(Row, RowN, NewRow, Grid, NewGrid),
 	(replace(Cell, ColN, _, Row, NewRow),
 	Cell == Content
 		;
@@ -54,9 +55,6 @@ put(Content, [RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, 1, 1):-
 	%check if rows are correct
 	searchClueIndex(RowN, RowsClues, RowsClueList),
 	checkClues(RowsClueList, NewRow,0).
-
-
-
 put(Content, [RowN, ColN], RowsClues, _ColsClues, Grid, NewGrid, 1, 0):-
 	
 	replace(Row, RowN, NewRow, Grid, NewGrid),
@@ -94,6 +92,3 @@ put(Content, [RowN, ColN], _RowsClues, _ColsClues, Grid, NewGrid, 0, 0):-
 	Cell == Content
 		;
 	replace(_Cell, ColN, Content, Row, NewRow)).
-
-
-
