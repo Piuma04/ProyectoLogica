@@ -27,6 +27,8 @@ function Game() {
         setGrid(response['Grid']);
         setRowsClues(response['RowClues']);
         setColsClues(response['ColumClues']);
+        //console.log(colsClues);
+        //console.log(response['ColumClues']);
       }
     });
   }
@@ -38,14 +40,20 @@ function Game() {
     }
     // Build Prolog query to make a move and get the new satisfacion status of the relevant clues.    
     const squaresS = JSON.stringify(grid).replaceAll('"_"', '_'); // Remove quotes for variables. squares = [["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]]
+    const rowClues = JSON.stringify(rowsClues);
+    const colClues = JSON.stringify(colsClues);
     const content = '#'; // Content to put in the clicked square.
-    const queryS = `put("${content}", [${i},${j}], [], [],${squaresS}, ResGrid, RowSat, ColSat)`; // queryS = put("#",[0,1],[], [],[["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]], GrillaRes, FilaSat, ColSat)
+    const queryS = `put("${content}", [${i},${j}], ${rowClues}, ${colClues},${squaresS}, ResGrid, RowSat, ColSat)`; // queryS = put("#",[0,1],[], [],[["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]], GrillaRes, FilaSat, ColSat)
+    //console.log(colsClues);
     setWaiting(true);
+    //console.log(queryS);
     pengine.query(queryS, (success, response) => {
       if (success) {
         setGrid(response['ResGrid']);
+        //window.alert(queryS);
         window.alert(response['RowSat']);
         window.alert(response['ColSat']);
+        console.log(response);
       }
       setWaiting(false);
     });
