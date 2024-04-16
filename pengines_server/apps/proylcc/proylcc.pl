@@ -35,9 +35,12 @@ checkClues([X|Xr],R,L,-1,S):- checkClues(Xr,R,L,X,S).
 
 checkClues([],[E|R],_L,0,S):-E\=="#", checkClues([],R,E,0,S).
 checkClues(_X,_Y,_Z,_W,0).
+
 %searchColumn(+ColumnNumber,+Grid,-Column).
 searchColumn(_ColN, [], []).
 searchColumn(ColN,[X|Xs],[Y|Ys]):-searchClueIndex(ColN,X,Y),searchColumn(ColN,Xs,Ys).
+
+
 %
 % put(+Content, +Pos, +RowsClues, +ColsClues, +Grid, -NewGrid, -RowSat, -ColSat).
 %
@@ -56,3 +59,37 @@ put(Content, [RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, RowSat, ColSat):
 	%check if rows are correct
 	searchClueIndex(RowN, RowsClues, RowsClueList),
 	checkCluesMask(RowsClueList, NewRow,RowSat).
+
+%checkWinner(+Position, +Grid, +AllRowClues, +AllColumnClues, -isWinner).                              
+
+checkWinner(P,G,[],[],1).
+checkWinner(P,G,[RC|RCs],[CC|CCs],W):-
+
+	searchColumn(P,G,NewColumn),
+	checkCluesMask(CC, NewColumn,ColSat),
+	
+	searchClueIndex(P,G,NewRow),
+	checkCluesMask(RC, NewRow,RowSat),
+
+	RowSat == 1, ColSat == 1, NewP  = P+1,
+	checkWinner(NewP, G, RCs, CCs, W).
+	
+checkWinner(P,G,R,C,0).	
+
+
+%%%%%%%%%%%%%%%%%
+%%Testing stuff%%
+%%%%%%%%%%%%%%%%%
+%
+%trace, put("#",[0,1],[[3], [1,2], [4], [5], [5]],[[2], [5], [1,3], [5], [4]],[["X","#","#","#","X"],["X","#","X","#","#"],["X","#","#","#","#"],["#","#","#","#","#"],["#","#","#","#","#"]],NG,Rs,Cs).
+%
+%checkWinner(0,[["X","#","#","#","X"],
+%				["X","#","X","#","#"],
+%				["X","#","#","#","#"],
+%				["#","#","#","#","#"],
+%           	["#","#","#","#","#"]],
+% 				[[3], [1,2], [4], [5], [5]],
+%				[[2], [5], [1,3], [5], [4]],
+%				IsWinner).
+%
+%checkWinner(0,[["X","#","#","X","X"],["X","#","X","#","#"],["X","#","#","#","#"],["#","#","#","#","#"],["#","#","#","#","#"]],[[3], [1,2], [4], [5], [5]],[[2], [5], [1,3], [5], [4]],IsWinner).
