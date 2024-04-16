@@ -5,20 +5,14 @@ import Board from './Board';
 let pengine;
 
 function Game() {
-
-  // State
   const [grid, setGrid] = useState(null);
   const [rowsClues, setRowsClues] = useState(null);
   const [colsClues, setColsClues] = useState(null);
   const [waiting, setWaiting] = useState(false);
-
+  const [RS, setRs] = useState(null);
   useEffect(() => {
-    // Creation of the pengine server instance.    
-    // This is executed just once, after the first render.    
-    // The callback will run when the server is ready, and it stores the pengine instance in the pengine variable. 
     PengineClient.init(handleServerReady);
   }, []);
-
   function handleServerReady(instance) {
     pengine = instance;
     const queryS = 'init(RowClues, ColumClues, Grid)';
@@ -27,43 +21,38 @@ function Game() {
         setGrid(response['Grid']);
         setRowsClues(response['RowClues']);
         setColsClues(response['ColumClues']);
-        //console.log(colsClues);
-        //console.log(response['ColumClues']);
+        setRs(0);
       }
     });
   }
-
   function handleClick(i, j) {
-    // No action on click if we are waiting.
     if (waiting) {
       return;
     }
-    // Build Prolog query to make a move and get the new satisfacion status of the relevant clues.    
-    const squaresS = JSON.stringify(grid).replaceAll('"_"', '_'); // Remove quotes for variables. squares = [["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]]
-    const rowClues = JSON.stringify(rowsClues);
+    const squaresS = JSON.stringify(grid).replaceAll('"_"', '_'); 
     const colClues = JSON.stringify(colsClues);
-    const content = '#'; // Content to put in the clicked square.
-    const queryS = `put("${content}", [${i},${j}], ${rowClues}, ${colClues},${squaresS}, ResGrid, RowSat, ColSat)`; // queryS = put("#",[0,1],[], [],[["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]], GrillaRes, FilaSat, ColSat)
-    //console.log(colsClues);
+    const rowClues = JSON.stringify(rowsClues);
+    const content = '#'; 
+    const queryS = `put("${content}", [${i},${j}], ${rowClues}, ${colClues},${squaresS}, ResGrid, RowSat, ColSat)`; 
+    
     setWaiting(true);
-    //console.log(queryS);
     pengine.query(queryS, (success, response) => {
       if (success) {
         setGrid(response['ResGrid']);
-        //window.alert(queryS);
-        window.alert(response['RowSat']);
-        window.alert(response['ColSat']);
-        console.log(response);
+        
+       console.log(response['RowSat']);
+        console.log(response['ColSat']);
+        setRs(response['RowSat']);
+       
       }
       setWaiting(false);
     });
   }
-
   if (!grid) {
     return null;
   }
-
-  const statusText = 'Keep playing!';
+  console.log(RS)
+  const statusText = RS === 0 ? 'Keep playing!' : 'You won!';
   return (
     <div className="game">
       <Board
