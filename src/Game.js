@@ -9,6 +9,7 @@ function Game() {
   const [rowsClues, setRowsClues] = useState(null);
   const [colsClues, setColsClues] = useState(null);
   const [waiting, setWaiting] = useState(false);
+  const [isCrossing, setIsCrossing] = useState(false);
   const [RS, setRS] = useState(null);
   //starts the server
   useEffect(() => {
@@ -49,7 +50,7 @@ function Game() {
     const squaresS = JSON.stringify(grid).replaceAll('"_"', '_'); 
     const colClues = JSON.stringify(colsClues);
     const rowClues = JSON.stringify(rowsClues);
-    const content = '#'; 
+    const content = isCrossing?'X':'#';
     const queryS = `put("${content}", [${i},${j}], ${rowClues}, ${colClues},${squaresS}, ResGrid, RowSat, ColSat)`; 
     
     setWaiting(true);
@@ -57,7 +58,7 @@ function Game() {
       if (success) {
         setGrid(response['ResGrid']);
         
-       console.log(response['RowSat']);
+        console.log(response['RowSat']);
         console.log(response['ColSat']);
         setRS(response['RowSat']);
        
@@ -68,7 +69,6 @@ function Game() {
   if (!grid) {
     return null;
   }
-  console.log(RS)
   const statusText = RS === 0 ? 'Keep playing!' : 'You won!';
   return (
     <div className="game">
@@ -78,6 +78,12 @@ function Game() {
         colsClues={colsClues}
         onClick={(i, j) => handleClick(i, j)}
       />
+    <div className="game-info">
+    <ModeSelector
+        value={isCrossing?"X":"#"}
+        changeBrush={() => setIsCrossing(!isCrossing)}
+      />
+    </div>
       <div className="game-info">
         {statusText}
       </div>
@@ -85,4 +91,12 @@ function Game() {
   );
 }
 
+function ModeSelector({value,changeBrush})
+{
+  return(
+  <button 
+    className='brush' onClick={changeBrush}>
+    {value}
+  </button>)
+}
 export default Game;

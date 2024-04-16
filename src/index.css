@@ -18,6 +18,17 @@ body {
   padding: 0;
   text-align: center;
 }
+.brush {
+  background: #4b4a4a;
+  border: 1px solid #030303;
+  font-size: 24px;
+  font-weight: bold;
+  margin-right: -1px;
+  margin-top: -1px;
+  padding: 0;
+  text-align: center;
+  background-color: rgb(192, 100, 151);
+}
 
 .board {
   display: grid;
