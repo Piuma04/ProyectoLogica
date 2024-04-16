@@ -10,6 +10,7 @@ function Game() {
   const [colsClues, setColsClues] = useState(null);
   const [waiting, setWaiting] = useState(false);
   const [RS, setRS] = useState(null);
+  //starts the server
   useEffect(() => {
     PengineClient.init(handleServerReady);
   }, []);
