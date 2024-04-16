@@ -67,6 +67,9 @@ body {
   border-radius: 8px;
   margin: 5px;
 }
+.colClues .discoveredClue  {
+  flex-direction: column;
+}
 
 .clue div {
   margin: 2px
