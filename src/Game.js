@@ -9,7 +9,7 @@ function Game() {
   const [rowsClues, setRowsClues] = useState(null);
   const [colsClues, setColsClues] = useState(null);
   const [waiting, setWaiting] = useState(false);
-  const [RS, setRs] = useState(null);
+  const [RS, setRS] = useState(null);
   useEffect(() => {
     PengineClient.init(handleServerReady);
   }, []);
@@ -21,10 +21,26 @@ function Game() {
         setGrid(response['Grid']);
         setRowsClues(response['RowClues']);
         setColsClues(response['ColumClues']);
-        setRs(0);
+        SVGAnimatedPreserveAspectRatio(0);
       }
     });
-  }
+  } 
+  //tell you if you won
+  useEffect(() => {
+    if(grid != null){
+      const squaresS2 = JSON.stringify(grid).replaceAll('"_"', '_');
+      const colClues = JSON.stringify(colsClues);
+      const rowClues = JSON.stringify(rowsClues);
+      const queryT = `checkWinner(${0}, ${squaresS2}, ${rowClues}, ${colClues}, IsWinner)`;
+      pengine.query(queryT, (success2, response2) => {
+        if (success2) {
+          setRS(response2['IsWinner']);
+        }
+        setWaiting(false);
+      });
+    }
+  }, [grid,rowsClues,colsClues]);
+  //handles the click
   function handleClick(i, j) {
     if (waiting) {
       return;
@@ -42,7 +58,7 @@ function Game() {
         
        console.log(response['RowSat']);
         console.log(response['ColSat']);
-        setRs(response['RowSat']);
+        setRS(response['RowSat']);
        
       }
       setWaiting(false);
