@@ -11,6 +11,7 @@ function Game() {
   const [waiting, setWaiting] = useState(false);
   const [isCrossing, setIsCrossing] = useState(false);
   const [RS, setRS] = useState(null);
+  const [highlightedClueCoords,setHighLightedClueCoords] = useState(null);
   //starts the server
   useEffect(() => {
     PengineClient.init(handleServerReady);
@@ -23,7 +24,8 @@ function Game() {
         setGrid(response['Grid']);
         setRowsClues(response['RowClues']);
         setColsClues(response['ColumClues']);
-        // de donde verga aparecio esto?? SVGAnimatedPreserveAspectRatio(0);
+        setHighLightedClueCoords([Array((response['Grid']).lenght).fill(0),[(response['Grid'])[0].lenght].fill(0)]);
+       //que verga es esto?? SVGAnimatedPreserveAspectRatio(0);
       }
     });
   } 
@@ -44,6 +46,7 @@ function Game() {
   }, [grid,rowsClues,colsClues]);
   //handles the click
   function handleClick(i, j) {
+    //console.log(highlightedClueCoords);
     if (waiting) {
       return;
     }
@@ -51,17 +54,15 @@ function Game() {
     const colClues = JSON.stringify(colsClues);
     const rowClues = JSON.stringify(rowsClues);
     const content = isCrossing?'X':'#';
+
     const queryS = `put("${content}", [${i},${j}], ${rowClues}, ${colClues},${squaresS}, ResGrid, RowSat, ColSat)`; 
     
     setWaiting(true);
     pengine.query(queryS, (success, response) => {
       if (success) {
         setGrid(response['ResGrid']);
-        
-        console.log(response['RowSat']);
-        console.log(response['ColSat']);
-        setRS(response['RowSat']);
-       
+        highlightedClueCoords[0][i] = response['RowSat'];
+        highlightedClueCoords[1][j] = response['ColSat'];
       }
       setWaiting(false);
     });
@@ -77,6 +78,7 @@ function Game() {
         rowsClues={rowsClues}
         colsClues={colsClues}
         onClick={(i, j) => handleClick(i, j)}
+        highlightedClueCoords={highlightedClueCoords}
       />
     <div className="game-info">
     <ModeSelector
