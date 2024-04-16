@@ -23,7 +23,7 @@ searchClueIndex(Index,[_X|Xs],Elem):- Index > 0, NewIndex is Index-1, searchClue
 checkCluesMask(X,Y,Sat):-checkClues(X,Y,_,-1,Sat).
 
 %checkClues(+GridStrcutureClues,+GridStrcuture,+CurrentGridStrcutureClue,-isSatisfied).
-checkClues([],[],L,0,1).
+checkClues([],[],_L,0,1).
 
 checkClues(X,[E|R],_L,N,S):- E == "#", N>0, NewN is N-1, checkClues(X, R,E,NewN,S).
 checkClues(X,[E|R],_L,0,S):-E\=="#", checkClues(X,R,E,0,S).
@@ -62,7 +62,7 @@ put(Content, [RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, RowSat, ColSat):
 
 %checkWinner(+Position, +Grid, +AllRowClues, +AllColumnClues, -isWinner).                              
 
-checkWinner(P,G,[],[],1).
+checkWinner(_P,_G,[],[],1).
 checkWinner(P,G,[RC|RCs],[CC|CCs],W):-
 
 	searchColumn(P,G,NewColumn),
@@ -74,7 +74,7 @@ checkWinner(P,G,[RC|RCs],[CC|CCs],W):-
 	RowSat == 1, ColSat == 1, NewP  = P+1,
 	checkWinner(NewP, G, RCs, CCs, W).
 	
-checkWinner(P,G,R,C,0).	
+checkWinner(_P,_G,_R,_C,0).	
 
 
 %%%%%%%%%%%%%%%%%
