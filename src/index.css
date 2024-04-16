@@ -59,6 +59,15 @@ body {
   border-radius: 8px;
   margin: 5px;
 }
+
+.clue div {
+  margin: 2px
+}
+
+.colClues .clue {
+  flex-direction: column;
+}
+
 .discoveredClue {
   display: flex;
   justify-content: center;
@@ -67,15 +76,12 @@ body {
   border-radius: 8px;
   margin: 5px;
 }
-.colClues .discoveredClue  {
-  flex-direction: column;
-}
 
-.clue div {
+.discoveredClue div {
   margin: 2px
 }
 
-.colClues .clue {
+.colClues .discoveredClue  {
   flex-direction: column;
 }
 
