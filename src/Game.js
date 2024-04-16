@@ -22,7 +22,7 @@ function Game() {
         setGrid(response['Grid']);
         setRowsClues(response['RowClues']);
         setColsClues(response['ColumClues']);
-        SVGAnimatedPreserveAspectRatio(0);
+        // de donde verga aparecio esto?? SVGAnimatedPreserveAspectRatio(0);
       }
     });
   } 
