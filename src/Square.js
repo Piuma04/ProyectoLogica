@@ -1,10 +1,22 @@
 import React from 'react';
 
 function Square({ value, onClick }) {
-    return (
+   let elem;
+   if(value === "#"){
+    elem = (
+        <button className="coloredSquare" onClick={onClick}>
+            {value !== '_' ? value : null}
+        </button>
+    );
+   }
+   else{
+    elem = (
         <button className="square" onClick={onClick}>
             {value !== '_' ? value : null}
         </button>
     );
+   }
+   
+    return elem;
 }
 export default Square;

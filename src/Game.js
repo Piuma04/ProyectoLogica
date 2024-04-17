@@ -95,10 +95,20 @@ function Game() {
 
 function ModeSelector({value,changeBrush})
 {
-  return(
+  let elem;
+  if(value === "#") {
+  elem = (
   <button 
-    className='brush' onClick={changeBrush}>
+    className='Hbrush' onClick={changeBrush}>
     {value}
-  </button>)
+  </button>);
+  }else{
+    elem = (
+      <button 
+        className='Xbrush' onClick={changeBrush}>
+        {value}
+      </button>);
+  }
+  return elem;
 }
 export default Game;

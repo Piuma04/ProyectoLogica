@@ -22,18 +22,22 @@ searchClueIndex(Index,[_X|Xs],Elem):- Index > 0, NewIndex is Index-1, searchClue
 %checkCluesMask(+GridStrcutureClues,+GridStrcuture,-isSatisfied).
 checkCluesMask(X,Y,Sat):-checkClues(X,Y,_,-1,Sat).
 
+%
 %checkClues(+GridStrcutureClues,+GridStrcuture,+CurrentGridStrcutureClue,-isSatisfied).
-checkClues([],[],_L,0,1).
+%
 
+%si se llega a este caso base significa que la estructura se corresponde con las pistas
+checkClues([],[],_L,0,1).
+%casos para cuando se encontro un # y se empieza a veirficicar si se corresponde con las pistas
 checkClues(X,[E|R],_L,N,S):- E == "#", N>0, NewN is N-1, checkClues(X, R,E,NewN,S).
 checkClues(X,[E|R],_L,0,S):-E\=="#", checkClues(X,R,E,0,S).
 checkClues([X|Xr],[E|R],L,0,S):-E== "#",L\=="#", checkClues(Xr,[E|R],L,X,S).
-
-
+%casos para cuando recien se comienza y todavia no se encontro con ningun #
 checkClues(X,[E|R],_L,-1,S):-E\=="#", checkClues(X,R,E,-1,S).
 checkClues([X|Xr],R,L,-1,S):- checkClues(Xr,R,L,X,S).
-
+%caso para cuando ya se completaron todas las pistas
 checkClues([],[E|R],_L,0,S):-E\=="#", checkClues([],R,E,0,S).
+%si alguno de esos casos falla, se llega a este que devuelve 0 (significa que no esta completo)
 checkClues(_X,_Y,_Z,_W,0).
 
 %searchColumn(+ColumnNumber,+Grid,-Column).
