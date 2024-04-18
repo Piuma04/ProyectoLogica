@@ -15,7 +15,8 @@ replace(X, XIndex, Y, [Xi|Xs], [Xi|XsY]):-
 
 
 %searchClueIndex(+Index,+AllClueGridStructure,-IndexedClueGridStructure).
-searchClueIndex(0,[X|_Xs],X).
+se
+archClueIndex(0,[X|_Xs],X).
 searchClueIndex(Index,[_X|Xs],Elem):- Index > 0, NewIndex is Index-1, searchClueIndex(NewIndex,Xs,Elem).
 
 
@@ -80,6 +81,17 @@ checkWinner(P,G,[RC|RCs],[CC|CCs],W):-
 	
 checkWinner(_P,_G,_R,_C,0).	
 
+%%getGrid no funciona,entra en un ciclo infinito, pero se tendria q poder hacer, REVISAR
+completeRow(0,[]).
+completeRow(L,[E|R]):-Nl is L-1, completeRow(Nl,R),(E="#";E="_").
+
+completeGrid(_RL,0,[],[]).
+completeGrid(RL,CC,[RC|RCs],[NR|G]):- completeRow(RL,NR), checkCluesMask(RC,NR,S),S==1, NCC is CC - 1, completeGrid(RL,NCC, RCs,G).
+
+
+completeGridMask(RC,CC,I,NG):-H is I, completeGrid(I,H,RC,NG),checkWinner(0,NG,RC,CC,W),W == 1.
+
+getGrid(RC,CC, NG):-length(RC,I),completeGridMask(RC,CC,I,NG).
 
 %%%%%%%%%%%%%%%%%
 %%Testing stuff%%
@@ -91,7 +103,7 @@ checkWinner(_P,_G,_R,_C,0).
 %				["X","#","X","#","#"],
 %				["X","#","#","#","#"],
 %				["#","#","#","#","#"],
-%           	["#","#","#","#","#"]],
+% 			 	["#","#","#","#","#"]],
 % 				[[3], [1,2], [4], [5], [5]],
 %				[[2], [5], [1,3], [5], [4]],
 %				IsWinner).
