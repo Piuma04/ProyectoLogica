@@ -31,7 +31,7 @@ body {
 }
 .Xbrush {
   background: #4b4a4a;
-  border: 1px solid #030303;
+  border: 3px solid #030303;
   font-size: 24px;
   font-weight: bold;
   margin-right: -1px;
@@ -42,9 +42,9 @@ body {
 }
 
 .Hbrush {
-  background: #4b4a4a;
-  border: 1px solid #030303;
-  font-size: 24px;
+  background: rgb(192, 100, 151);
+  border: 5px solid #b37d7d;
+  font-size: 20px;
   font-weight: bold;
   margin-right: -1px;
   margin-top: -1px;
