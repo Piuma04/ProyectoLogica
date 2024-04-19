@@ -4,7 +4,7 @@ function CenteredContainer({ children }) {
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
-      height: '100%',
+      height: '75vh',
       width: '100%',
       
     }}>

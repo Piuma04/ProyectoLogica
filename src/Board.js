@@ -7,13 +7,8 @@ function Board({ grid, rowsClues, colsClues, onClick, highlightedClueCoords }) {
     const numOfRows = grid.length;
     const numOfCols = grid[0].length;
     return (
-        <CenteredContainer>
-        <div className="vertical" style={{
-            display: 'flex',
-            justifyContent: 'center', 
-            alignItems: 'center', 
-            height: '100vh', 
-          }}>
+        
+        <div className="vertical" >
             <div
                 className="colClues"
                 style={{
@@ -59,7 +54,7 @@ function Board({ grid, rowsClues, colsClues, onClick, highlightedClueCoords }) {
                 </div>
             </div>
         </div>
-        </CenteredContainer>);
+       );
 }
 
 export default Board;

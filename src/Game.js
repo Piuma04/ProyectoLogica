@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PengineClient from './PengineClient';
 import Board from './Board';
+import CenteredContainer from './CenteredContainer';
 
 let pengine;
 
@@ -71,7 +72,7 @@ function Game() {
     return null;
   }
   const statusText = RS === 0 ? 'Keep playing!' : 'You won!';
-  return (
+  return (<CenteredContainer>
     <div className="game">
       <Board
         grid={grid}
@@ -84,13 +85,14 @@ function Game() {
     <ModeSelector
         value={isCrossing?"X":"#"}
         changeBrush={() => setIsCrossing(!isCrossing)}
+        
       />
     </div>
       <div className="game-info">
         {statusText}
       </div>
     </div>
-  );
+    </CenteredContainer>);
 }
 
 function ModeSelector({value,changeBrush})
