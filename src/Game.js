@@ -73,6 +73,7 @@ function Game() {
   }
   const statusText = RS === 0 ? 'Keep playing!' : 'You won!';
   return (<CenteredContainer>
+   
     <div className="game">
       <Board
         grid={grid}
@@ -81,17 +82,26 @@ function Game() {
         onClick={(i, j) => handleClick(i, j)}
         highlightedClueCoords={highlightedClueCoords}
       />
-    <div className="game-info">
-    <ModeSelector
-        value={isCrossing?"X":"#"}
-        changeBrush={() => setIsCrossing(!isCrossing)}
-        
-      />
+
+      
     </div>
+    <div className="container" style={{
+      display: 'flex',
+      flexDirection: 'row',
+      
+    }}>
       <div className="game-info">
-        {statusText}
+          <ModeSelector
+            value={isCrossing?"X":"#"}
+            changeBrush={() => setIsCrossing(!isCrossing)}
+        
+         />
+        </div>
+      <div className="game-info">
+          {statusText}
       </div>
     </div>
+
     </CenteredContainer>);
 }
 
