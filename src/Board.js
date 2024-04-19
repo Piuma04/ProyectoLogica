@@ -1,7 +1,7 @@
 import React from 'react';
 import Square from './Square';
 import Clue from './Clue';
-import CenteredContainer from './CenteredContainer';
+
 
 function Board({ grid, rowsClues, colsClues, onClick, highlightedClueCoords }) {
     const numOfRows = grid.length;
