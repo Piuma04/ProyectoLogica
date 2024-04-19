@@ -15,8 +15,7 @@ replace(X, XIndex, Y, [Xi|Xs], [Xi|XsY]):-
 
 
 %searchClueIndex(+Index,+AllClueGridStructure,-IndexedClueGridStructure).
-se
-archClueIndex(0,[X|_Xs],X).
+searchClueIndex(0,[X|_Xs],X).
 searchClueIndex(Index,[_X|Xs],Elem):- Index > 0, NewIndex is Index-1, searchClueIndex(NewIndex,Xs,Elem).
 
 
