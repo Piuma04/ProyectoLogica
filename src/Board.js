@@ -1,24 +1,25 @@
 import React from 'react';
 import Square from './Square';
 import Clue from './Clue';
+import CenteredContainer from './CenteredContainer';
 
 function Board({ grid, rowsClues, colsClues, onClick, highlightedClueCoords }) {
     const numOfRows = grid.length;
     const numOfCols = grid[0].length;
     return (
-        <div className="vertical">
+        <CenteredContainer>
+        <div className="vertical" style={{
+            display: 'flex',
+            justifyContent: 'center', 
+            alignItems: 'center', 
+            height: '100vh', 
+          }}>
             <div
                 className="colClues"
                 style={{
                     gridTemplateRows: '60px',
                     gridTemplateColumns: `60px repeat(${numOfCols}, 40px)`
-                    /*
-                       60px  40px 40px 40px 40px 40px 40px 40px   (gridTemplateColumns)
-                      ______ ____ ____ ____ ____ ____ ____ ____
-                     |      |    |    |    |    |    |    |    |  60px
-                     |      |    |    |    |    |    |    |    |  (gridTemplateRows)
-                      ------ ---- ---- ---- ---- ---- ---- ---- 
-                     */
+                    
                 }}
             >
                 <div>{/* top-left corner square */}</div>
@@ -26,7 +27,7 @@ function Board({ grid, rowsClues, colsClues, onClick, highlightedClueCoords }) {
                     <Clue clue={clue} highlight={highlightedClueCoords[1][i]} key={i} />
                 )}
             </div>
-            <div className="horizontal">
+            <div className="horizontal" >
                 <div
                     className="rowClues"
                     style={{
@@ -44,6 +45,7 @@ function Board({ grid, rowsClues, colsClues, onClick, highlightedClueCoords }) {
                     style={{
                         gridTemplateRows: `repeat(${numOfRows}, 40px)`,
                         gridTemplateColumns: `repeat(${numOfCols}, 40px)`
+                        
                     }}>
                     {grid.map((row, i) =>
                         row.map((cell, j) =>
@@ -57,7 +59,7 @@ function Board({ grid, rowsClues, colsClues, onClick, highlightedClueCoords }) {
                 </div>
             </div>
         </div>
-    );
+        </CenteredContainer>);
 }
 
 export default Board;
