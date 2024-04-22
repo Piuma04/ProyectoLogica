@@ -20,13 +20,13 @@ searchClueIndex(Index,[_X|Xs],Elem):- Index > 0, NewIndex is Index-1, searchClue
 
 
 %checkCluesMask(+GridStrcutureClues,+GridStrcuture,-isSatisfied).
-checkCluesMask(X,Y,Sat):-checkClues(X,Y,Sat).
+%checkClues(X,Y,Sat):-checkClues(X,Y,Sat).
 
 %
 %checkClues(+GridStrcutureClues,+GridStrcuture,+CurrentGridStrcutureClue,-isSatisfied).
 %
-%checkCluesMask(+GridStrcutureClues,+GridStrcuture,-isSatisfied).
-%checkCluesMask(X,Y,Sat):-checkClues(X,Y,_,-1,Sat).
+%checkClues(+GridStrcutureClues,+GridStrcuture,-isSatisfied).
+%checkClues(X,Y,Sat):-checkClues(X,Y,_,-1,Sat).
 
 %
 %checkClues(+GridStrcutureClues,+GridStrcuture,+CurrentGridStrcutureClue,-isSatisfied).
@@ -75,22 +75,40 @@ put(Content, [RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, RowSat, ColSat):
 	%check if columns are correct
 	searchColumn(ColN,NewGrid,NewColumn),
 	searchClueIndex(ColN, ColsClues, ColsClueList),
-	checkCluesMask(ColsClueList, NewColumn,ColSat),
+	checkClues(ColsClueList, NewColumn,ColSat),
 	
 	%check if rows are correct
 	searchClueIndex(RowN, RowsClues, RowsClueList),
-	checkCluesMask(RowsClueList, NewRow,RowSat).
+	checkClues(RowsClueList, NewRow,RowSat).
 
 %checkWinner(+Position, +Grid, +AllRowClues, +AllColumnClues, -isWinner).                              
-
+%base succes case
 checkWinner(_P,_G,[],[],1).
+%if there are more columns than rows
+checkWinner(P,G,[],[CC|CCs],W):-
+
+	searchColumn(P,G,NewColumn),
+	checkClues(CC, NewColumn,ColSat),
+	
+
+	ColSat == 1, NewP  = P+1,
+	checkWinner(NewP, G, [], CCs, W).
+%if there are more rows than columns
+checkWinner(P,G,[RC|RCs],[],W):-
+	
+	searchClueIndex(P,G,NewRow),
+	checkClues(RC, NewRow,RowSat),
+
+	RowSat == 1, NewP  = P+1,
+	checkWinner(NewP, G, RCs, [], W).
+
 checkWinner(P,G,[RC|RCs],[CC|CCs],W):-
 
 	searchColumn(P,G,NewColumn),
-	checkCluesMask(CC, NewColumn,ColSat),
+	checkClues(CC, NewColumn,ColSat),
 	
 	searchClueIndex(P,G,NewRow),
-	checkCluesMask(RC, NewRow,RowSat),
+	checkClues(RC, NewRow,RowSat),
 
 	RowSat == 1, ColSat == 1, NewP  = P+1,
 	checkWinner(NewP, G, RCs, CCs, W).
@@ -102,17 +120,19 @@ completeRow(0,[]).
 completeRow(L,[E|R]):-Nl is L-1, completeRow(Nl,R),(E="#";E="_").
 
 completeGrid(_RL,0,[],[]).
-completeGrid(RL,CC,[RC|RCs],[NR|G]):- completeRow(RL,NR), checkCluesMask(RC,NR,S),S==1, NCC is CC - 1, completeGrid(RL,NCC, RCs,G).
+completeGrid(RowLength,CantRows,[RC|RCs],[NR|G]):- completeRow(RowLength,NR), checkClues(RC,NR,S),S==1, NCC is CantRows - 1, completeGrid(RowLength,NCC, RCs,G).
 
 
 completeGridMask(RC,CC,I,NG):-H is I, completeGrid(I,H,RC,NG),checkWinner(0,NG,RC,CC,W),W == 1.
 
 getGrid(RC,CC, NG):-length(RC,I),completeGridMask(RC,CC,I,NG).
 
+
 %%%%%%%%%%%%%%%%%
 %%Testing stuff%%
 %%%%%%%%%%%%%%%%%
 %
+%getGrid([[1],[2]],[[2],[1]],G).
 %trace, put("#",[0,1],[[3], [1,2], [4], [5], [5]],[[2], [5], [1,3], [5], [4]],[["X","#","#","#","X"],["X","#","X","#","#"],["X","#","#","#","#"],["#","#","#","#","#"],["#","#","#","#","#"]],NG,Rs,Cs).
 %
 %checkWinner(0,[["X","#","#","#","X"],

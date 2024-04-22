@@ -2,7 +2,6 @@ import React from 'react';
 import Square from './Square';
 import Clue from './Clue';
 
-
 function Board({ grid, rowsClues, colsClues, onClick, highlightedClueCoords }) {
     const numOfRows = grid.length;
     const numOfCols = grid[0].length;
