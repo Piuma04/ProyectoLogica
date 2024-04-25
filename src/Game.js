@@ -19,13 +19,13 @@ function Game() {
   }, []);
   function handleServerReady(instance) {
     pengine = instance;
-    const queryS = 'init(RowClues, ColumClues, Grid)';
+    const queryS = 'init(RowClues, ColumClues, Grid),markInicialClues(Grid,RowClues,ColumClues,GridSat)';
     pengine.query(queryS, (success, response) => {
       if (success) {
         setGrid(response['Grid']);
         setRowsClues(response['RowClues']);
         setColsClues(response['ColumClues']);
-        setHighLightedClueCoords([Array((response['Grid']).lenght).fill(0),[(response['Grid'])[0].lenght].fill(0)]);
+        setHighLightedClueCoords(response['GridSat']);
        //que verga es esto?? SVGAnimatedPreserveAspectRatio(0);
       }
     });
@@ -57,7 +57,7 @@ function Game() {
     const content = isCrossing?'X':'#';
 
     const queryS = `put("${content}", [${i},${j}], ${rowClues}, ${colClues},${squaresS}, ResGrid, RowSat, ColSat)`; 
-    
+    console.log(highlightedClueCoords);
     setWaiting(true);
     pengine.query(queryS, (success, response) => {
       if (success) {

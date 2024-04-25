@@ -14,9 +14,9 @@ replace(X, XIndex, Y, [Xi|Xs], [Xi|XsY]):-
 
 
 
-%searchClueIndex(+Index,+AllClueGridStructure,-IndexedClueGridStructure).
-searchClueIndex(0,[X|_Xs],X).
-searchClueIndex(Index,[_X|Xs],Elem):- Index > 0, NewIndex is Index-1, searchClueIndex(NewIndex,Xs,Elem).
+%searchIndex(+Index,+AllClueGridStructure,-IndexedClueGridStructure).
+searchIndex(0,[X|_Xs],X).
+searchIndex(Index,[_X|Xs],Elem):- Index > 0, NewIndex is Index-1, searchIndex(NewIndex,Xs,Elem).
 
 
 %checkCluesMask(+GridStrcutureClues,+GridStrcuture,-isSatisfied).
@@ -59,9 +59,29 @@ checkFollowing(Cant,[Y|Ys],Residual):-Y=="#",NewCant is Cant-1,checkFollowing(Ne
 
 %searchColumn(+ColumnNumber,+Grid,-Column).
 searchColumn(_ColN, [], []).
-searchColumn(ColN,[X|Xs],[Y|Ys]):-searchClueIndex(ColN,X,Y),searchColumn(ColN,Xs,Ys).
+searchColumn(ColN,[X|Xs],[Y|Ys]):-searchIndex(ColN,X,Y),searchColumn(ColN,Xs,Ys).
 
-
+markInicialClues(G,RowsClues,ColsClues,Res):-markInicialCluesAux(0,G,RowsClues,ColsClues,Res).
+markInicialCluesAux(_P, _G, [], [], [[],[]]).
+markInicialCluesAux(P, G, [RC|RCs], [CC|CCs], [[RS|RSs],[CS|CSs]]) :-
+    searchColumn(P, G, Column),
+	searchIndex(P, G, Row),
+    checkClues(CC, Column, CS),
+    checkClues(RC, Row, RS),
+	NewP is P + 1,
+    markInicialCluesAux(NewP, G, RCs, CCs, [RSs,CSs]).
+%if there are more columns than rows
+markInicialCluesAux(P, G, [], [CC|CCs], [[0|RSs],[CS|CSs]]):-
+	searchColumn(P, G, Column),
+    checkClues(CC, Column, CS),
+	NewP is P + 1,
+    markInicialCluesAux(NewP, G, [], CCs, [RSs,CSs]).
+%if there are more rows than columns
+markInicialCluesAux(P, G, [RC|RCs], [], [[RS|RSs],[0|CSs]]):-
+	searchIndex(P, G, Row),
+    checkClues(RC, Row, RS),
+	NewP is P + 1,
+    markInicialCluesAux(NewP, G, RCs, [], [RSs,CSs]).
 %
 % put(+Content, +Pos, +RowsClues, +ColsClues, +Grid, -NewGrid, -RowSat, -ColSat).
 %
@@ -74,11 +94,11 @@ put(Content, [RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, RowSat, ColSat):
         Cell \== Content),
 	%check if columns are correct
 	searchColumn(ColN,NewGrid,NewColumn),
-	searchClueIndex(ColN, ColsClues, ColsClueList),
+	searchIndex(ColN, ColsClues, ColsClueList),
 	checkClues(ColsClueList, NewColumn,ColSat),
 	
 	%check if rows are correct
-	searchClueIndex(RowN, RowsClues, RowsClueList),
+	searchIndex(RowN, RowsClues, RowsClueList),
 	checkClues(RowsClueList, NewRow,RowSat).
 
 %checkWinner(+Position, +Grid, +AllRowClues, +AllColumnClues, -isWinner).                              
@@ -96,7 +116,7 @@ checkWinner(P,G,[],[CC|CCs],W):-
 %if there are more rows than columns
 checkWinner(P,G,[RC|RCs],[],W):-
 	
-	searchClueIndex(P,G,NewRow),
+	searchIndex(P,G,NewRow),
 	checkClues(RC, NewRow,RowSat),
 
 	RowSat == 1, NewP  = P+1,
@@ -107,7 +127,7 @@ checkWinner(P,G,[RC|RCs],[CC|CCs],W):-
 	searchColumn(P,G,NewColumn),
 	checkClues(CC, NewColumn,ColSat),
 	
-	searchClueIndex(P,G,NewRow),
+	searchIndex(P,G,NewRow),
 	checkClues(RC, NewRow,RowSat),
 
 	RowSat == 1, ColSat == 1, NewP  = P+1,
