@@ -5,6 +5,9 @@ import Clue from './Clue';
 function Board({ grid, rowsClues, colsClues, onClick, highlightedClueCoords }) {
     const numOfRows = grid.length;
     const numOfCols = grid[0].length;
+    const maxNumbersRow = computeMax(rowsClues)*30;
+    const maxNumbersCol = computeMax(colsClues)*30;
+    const pxGap = Math.abs(maxNumbersRow-maxNumbersCol);
     return (
         
         <div className="vertical" >
@@ -56,4 +59,13 @@ function Board({ grid, rowsClues, colsClues, onClick, highlightedClueCoords }) {
        );
 }
 
+function computeMax(Clue)
+{
+    var max = 0;
+    for(var i = 0;i<Clue.length;i++)
+        if(max<Clue[i].length)
+            max = Clue[i].length;
+        
+    return
+}
 export default Board;
