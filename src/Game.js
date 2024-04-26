@@ -40,7 +40,8 @@ function Game() {
       pengine.query(queryT, (success2, response2) => {
         if (success2) {
           setRS(response2['IsWinner']);
-          
+          if(response2['IsWinner']==1)
+            setWaiting(true);
         }
         
       });
@@ -76,9 +77,6 @@ function Game() {
     return null;
   }
   const statusText = RS === 0 ? 'Keep playing!' : 'You won!';
- if(RS === 1){
-  setWaiting(true);
- }
   return (<CenteredContainer>
    
     <div className="game">
