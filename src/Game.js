@@ -40,17 +40,18 @@ function Game() {
       pengine.query(queryT, (success2, response2) => {
         if (success2) {
           setRS(response2['IsWinner']);
+          
         }
-        setWaiting(false);
+        
       });
     }
   }, [grid,rowsClues,colsClues]);
   //handles the click
   function handleClick(i, j) {
     //console.log(highlightedClueCoords);
-    if (waiting) {
-      return;
-    }
+    if (!waiting) {
+      
+    
     const squaresS = JSON.stringify(grid).replaceAll('"_"', '_'); 
     const colClues = JSON.stringify(colsClues);
     const rowClues = JSON.stringify(rowsClues);
@@ -58,20 +59,26 @@ function Game() {
 
     const queryS = `put("${content}", [${i},${j}], ${rowClues}, ${colClues},${squaresS}, ResGrid, RowSat, ColSat)`; 
     console.log(highlightedClueCoords);
-    setWaiting(true);
-    pengine.query(queryS, (success, response) => {
-      if (success) {
-        setGrid(response['ResGrid']);
-        highlightedClueCoords[0][i] = response['RowSat'];
-        highlightedClueCoords[1][j] = response['ColSat'];
-      }
-      setWaiting(false);
-    });
+    
+      setWaiting(true);
+      pengine.query(queryS, (success, response) => {
+      
+        if (success) {
+          setGrid(response['ResGrid']);
+          highlightedClueCoords[0][i] = response['RowSat'];
+          highlightedClueCoords[1][j] = response['ColSat'];
+        }
+        setWaiting(false);
+      });
+    }
   }
   if (!grid) {
     return null;
   }
   const statusText = RS === 0 ? 'Keep playing!' : 'You won!';
+ if(RS === 1){
+  setWaiting(true);
+ }
   return (<CenteredContainer>
    
     <div className="game">
@@ -117,6 +124,7 @@ function ModeSelector({value,changeBrush})
   }else{
     elem = (
       <button 
+        
         className='Xbrush' onClick={changeBrush}>
         {value}
       </button>);
