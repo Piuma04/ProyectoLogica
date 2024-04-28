@@ -5,7 +5,6 @@ function Square({ value, onClick }) {
    if(value === "#"){
     elem = (
         <button className="coloredSquare" onClick={onClick}>
-            {value !== '_' ? value : null}
         </button>
     );
    }

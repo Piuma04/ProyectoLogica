@@ -138,8 +138,6 @@ checkWinner(_P,_G,_R,_C,0).
 %%getGrid no funciona,entra en un ciclo infinito, pero se tendria q poder hacer, REVISAR
 completeRow(0,[]).
 completeRow(L,[E|R]):-Nl is L-1, completeRow(Nl,R),(E="#";E="_").
-completeGridA(_L,_W,[]).
-completeGridA(L,W,[C|Cs]):-completeRow(W,Rows),C=Rows,completeGridA(L,W,Cs).
 completeGrid(_RL,0,[],[]).
 completeGrid(RowLength,CantRows,[RC|RCs],[NR|G]):- completeRow(RowLength,NR), checkClues(RC,NR,S),S==1, NCC is CantRows - 1, completeGrid(RowLength,NCC, RCs,G).
 
