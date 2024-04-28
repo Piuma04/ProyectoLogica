@@ -33,28 +33,43 @@ body {
   padding: 0;
   text-align: center;
 }
+
 .Xbrush {
-  background: #4b4a4a;
+  width: 40px; /* Ancho del cuadrado */
+  height: 40px; /* Altura del cuadrado */
+  background-color: #b37d7d;
   border: 5px solid #b37d7d;
   font-size: 20px;
   font-weight: bold;
-  margin-right: -1px;
-  margin-top: -1px;
-  padding: 0;
   text-align: center;
-  background-color: rgb(192, 100, 151);
+  position: relative;
 }
 
+.Xbrush::before,
+.Xbrush::after {
+  content: '';
+  position: absolute;
+  width: 70%; /* Longitud de las líneas de la X */
+  height: 5px; /* Grosor de las líneas de la X */
+  background-color: #131212; /* Color de las líneas de la X */
+  top: calc(50% - 2.5px); /* Posiciona verticalmente las líneas */
+  left: 50%; /* Posiciona horizontalmente las líneas */
+  transform-origin: center; /* Establece el origen de la transformación en el centro */
+}
+
+.Xbrush::before {
+  transform: translateX(-50%) rotate(45deg); /* Inclina la línea para formar la X */
+}
+
+.Xbrush::after {
+  transform: translateX(-50%) rotate(-45deg); /* Inclina la línea para formar la X */
+}
 .Hbrush {
-  background: #b37d7d;
+  width: 40px; /* Ancho del cuadrado */
+  height: 40px; /* Altura del cuadrado */
+  background-color: #000; /* Color de fondo negro */
   border: 5px solid #b37d7d;
-  font-size: 20px;
-  font-weight: bold;
-  margin-right: -1px;
-  margin-top: -1px;
-  padding: 0;
-  text-align: center;
-  background-color: rgb(8, 8, 8);
+  position: relative;
 }
 
 .board {

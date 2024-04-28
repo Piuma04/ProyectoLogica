@@ -132,14 +132,12 @@ function ModeSelector({value,changeBrush})
   elem = (
   <button 
     className='Hbrush' onClick={changeBrush}>
-    {value}
   </button>);
   }else{
     elem = (
       <button 
         
         className='Xbrush' onClick={changeBrush}>
-        {value}
       </button>);
   }
   return elem;
