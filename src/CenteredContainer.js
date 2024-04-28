@@ -10,7 +10,9 @@ function CenteredContainer({ children }) {
       width: '100vw',
       backgroundImage: `url(${bg})`,
       backgroundRepeat: 'no-repeat',
-      backgroundSize: 'cover'
+      backgroundSize: 'cover',
+      margin: 0, // Elimina cualquier margen predeterminado
+      padding: 0, // Elimina cualquier relleno predeterminado
     }}>
       {children}
     </div>

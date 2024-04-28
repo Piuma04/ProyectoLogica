@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import PengineClient from './PengineClient';
 import Board from './Board';
 import CenteredContainer from './CenteredContainer';
-import bg from './stalin.jpg';
 let pengine;
 
 function Game() {
@@ -40,7 +39,7 @@ function Game() {
       pengine.query(queryT, (success2, response2) => {
         if (success2) {
           setRS(response2['IsWinner']);
-          if(response2['IsWinner']==1)
+          if(response2['IsWinner']===1)
             setWaiting(true);
         }
         
@@ -83,45 +82,44 @@ function Game() {
   };
 
   const statusText = RS === 0 ? 'Keep playing!' : 'You won!';
-  return (<CenteredContainer>
+  return (
+  <CenteredContainer>
    
-   <div>
+      {/*this is shown when the player wins*/}
       {RS === 1 && (
         <div className="alert" >
-          <p>¡Mensaje importante! Presiona OK para reiniciar la página.</p>
+          <p>¡You Won! Press OK to restart.</p>
           <button onClick={handleOkClick}>OK</button>
         </div>
       )}
-      {/* Resto de tu aplicación */}
-    </div>
-    <div className="game">
-      <Board
-        grid={grid}
-        rowsClues={rowsClues}
-        colsClues={colsClues}
-        onClick={(i, j) => handleClick(i, j)}
-        highlightedClueCoords={highlightedClueCoords}
-      />
 
-      
-    </div>
-    <div className="container" style={{
-      display: 'flex',
-      flexDirection: 'row',
-      
-    }}>
-      <div className="game-info">
-          <ModeSelector
-            value={isCrossing?"X":"#"}
-            changeBrush={() => setIsCrossing(!isCrossing)}
+      {/* this is shown while the player is playing*/}
+      {RS === 0 &&
+      (<div><div className="game">
+        <Board
+          grid={grid}
+          rowsClues={rowsClues}
+          colsClues={colsClues}
+          onClick={(i, j) => handleClick(i, j)}
+          highlightedClueCoords={highlightedClueCoords}
+        />
+
         
-         />
-        </div>
-      <div className="game-info">
-          {statusText}
       </div>
-    </div>
-
+      <div className="container" >
+        <div className="game-info">
+            <ModeSelector
+              value={isCrossing?"X":"#"}
+              changeBrush={() => setIsCrossing(!isCrossing)}
+          
+          />
+          </div>
+        <div className="game-info">
+            {statusText}
+        </div>
+      </div>
+      </div>
+      )}
     </CenteredContainer>);
 }
 

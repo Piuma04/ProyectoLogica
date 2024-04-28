@@ -135,3 +135,11 @@ body {
 .game-info {
   margin-left: 20px;
 }
+
+.container{
+  display: flex;
+  flex-direction: row;
+  padding : 10px;
+  justify-content: center;
+  align-items: center;
+}
