@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PengineClient from './PengineClient';
 import Board from './Board';
 import CenteredContainer from './CenteredContainer';
-
+import bg from './stalin.jpg';
 let pengine;
 
 function Game() {
@@ -76,9 +76,24 @@ function Game() {
   if (!grid) {
     return null;
   }
+
+  const handleOkClick = () => {
+    // Reiniciar la página
+    window.location.reload();
+  };
+
   const statusText = RS === 0 ? 'Keep playing!' : 'You won!';
   return (<CenteredContainer>
    
+   <div>
+      {RS === 1 && (
+        <div className="alert" >
+          <p>¡Mensaje importante! Presiona OK para reiniciar la página.</p>
+          <button onClick={handleOkClick}>OK</button>
+        </div>
+      )}
+      {/* Resto de tu aplicación */}
+    </div>
     <div className="game">
       <Board
         grid={grid}
