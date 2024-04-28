@@ -1,3 +1,4 @@
+import bg from './stalin.jpg';
 function CenteredContainer({ children }) {
   return (
     <div style={{
@@ -5,9 +6,11 @@ function CenteredContainer({ children }) {
       flexDirection:'column',
       justifyContent: 'center',
       alignItems: 'center',
-      height: '75vh',
-      width: '100%',
-      
+      height: '100vh',
+      width: '100vw',
+      backgroundImage: `url(${bg})`,
+      backgroundRepeat: 'no-repeat',
+      backgroundSize: 'cover'
     }}>
       {children}
     </div>
