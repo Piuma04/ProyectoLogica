@@ -81,21 +81,21 @@ function Game() {
     window.location.reload();
   };
 
-  const statusText = GameSatisfaction === 0 ? 'Keep playing!' : 'You won!';
+  const statusText ='Keep playing!' ;
   return (
   <CenteredContainer>
    
-      {/*this is shown when the player wins*/}
-      {GameSatisfaction === 1 && (
+      
+      {/*GameSatisfaction === 1 && (
         <div className="alert" >
           <p>¡You Won! Press OK to restart.</p>
           <button onClick={handleOkClick}>OK</button>
         </div>
-      )}
+      )*/}
 
-      {/* this is shown while the player is playing*/}
-      {GameSatisfaction === 0 &&
-      (<div><div className="game">
+      
+      
+      <div><div className="game">
         <Board
           grid={grid}
           rowsClues={rowsClues}
@@ -115,11 +115,17 @@ function Game() {
           />
           </div>
         <div className="game-info">
-            {statusText}
+            {GameSatisfaction === 0 && statusText}
+            {GameSatisfaction === 1 && (
+              <div className="alert" >
+                <p>¡You Won!  \n
+                  Press OK to restart.</p>
+                <button onClick={handleOkClick}>OK</button>
+              </div>
+            )}
         </div>
       </div>
       </div>
-      )}
     </CenteredContainer>);
 }
 
