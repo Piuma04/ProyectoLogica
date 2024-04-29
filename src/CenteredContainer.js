@@ -1,4 +1,4 @@
-import bg from './stalin.jpg';
+import bg from './toad.jpg';
 function CenteredContainer({ children }) {
   return (
     <div style={{
@@ -8,10 +8,10 @@ function CenteredContainer({ children }) {
       alignItems: 'center',
       height: '100vh',
       width: '100vw',
-      //backgroundImage: `url(${bg})`,
-      backgroundColor: 'yellow',
+      backgroundImage: `url(${bg})`,
+      //backgroundColor: 'yellow',
       backgroundRepeat: 'no-repeat',
-      backgroundSize: 'cover',
+      //backgroundSize: 'cover',
       margin: 0, // Elimina cualquier margen predeterminado
       padding: 0, // Elimina cualquier relleno predeterminado
     }}>
