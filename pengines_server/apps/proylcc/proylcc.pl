@@ -14,7 +14,7 @@ replace(X, XIndex, Y, [Xi|Xs], [Xi|XsY]):-
 
 
 
-%searchIndex(+Index,+AllClueGridStructure,-IndexedClueGridStructure).
+%searchIndex(+Index,+List,-IndexedElement). Searches indexed element in list.
 searchIndex(0,[X|_Xs],X).
 searchIndex(Index,[_X|Xs],Elem):- Index > 0, NewIndex is Index-1, searchIndex(NewIndex,Xs,Elem).
 
@@ -47,44 +47,45 @@ searchIndex(Index,[_X|Xs],Elem):- Index > 0, NewIndex is Index-1, searchIndex(Ne
 %checkClues(_X,_Y,_Z,_W,0).
 %
 
-%checkClues(+Clues,+GridStructure,-SatisfiesClues)
+%checkClues(+Clues,+Line,-SatisfiesClues). Given a clue and a line, specifies whether the clues are satisfied or not.
 checkClues([],[],1).
-checkClues(Clue,[Elem|Elems],S):-Elem\=="#",checkClues(Clue,Elems,S).
-checkClues([Clue|Clues],List,S):-checkFollowing(Clue,List,[R|Rs]),R\=="#",checkClues(Clues,[R|Rs],S).
-checkClues([Clue|Clues],List,S):-checkFollowing(Clue,List,[]),checkClues(Clues,[],S).
+checkClues(Clue,[Elem|Elems],Sat):-Elem\=="#",checkClues(Clue,Elems,Sat).
+checkClues([Clue|Clues],Line,Sat):-checkFollowing(Clue,Line,[R|Rs]),R\=="#",checkClues(Clues,[R|Rs],Sat).
+checkClues([Clue|Clues],Line,Sat):-checkFollowing(Clue,Line,[]),checkClues(Clues,[],Sat).
 checkClues(_Clue,_List,0).
 
+%checkFollowing(+CantOfFollowing#,+Line,-Residual). Given an amount of following # and a line, specifies the line without the inicial #.
 checkFollowing(0,Residual,Residual).
-checkFollowing(Cant,[Y|Ys],Residual):-Y=="#",NewCant is Cant-1,checkFollowing(NewCant,Ys,Residual).
+checkFollowing(Cant,[Elem|Elems],Residual):-Elem=="#",NewCant is Cant-1,checkFollowing(NewCant,Elems,Residual).
 
-%searchColumn(+ColumnNumber,+Grid,-Column).
-searchColumn(_ColN, [], []).
-searchColumn(ColN,[Row|Rows],[Elem|Elems]):-searchIndex(ColN,Row,Elem),searchColumn(ColN,Rows,Elems).
+%searchColumn(+ColumnIndex,+Grid,-Column). Given a column index and a grid, specifies the indexed column from the grid.
+searchColumn(_ColI, [], []).
+searchColumn(ColI,[Row|Rows],[Elem|Elems]):-searchIndex(ColI,Row,Elem),searchColumn(ColI,Rows,Elems).
 
-%markInicialClues(+Grid,+AllRowsClues,+AllColsClues,-RowsAndColsSatisfied)
-markInicialClues(Grid,RowsClues,ColsClues,Res):-markInicialCluesAux(0,Grid,RowsClues,ColsClues,Res).
+%markInicialClues(+Grid,+AllRowsClues,+AllColsClues,-RowsAndColsSatisfied). Given a grid and all clues, specifies a list of two lists which include the corresponding row and col satisfactions.
+markInicialClues(Grid,RowsClues,ColsClues,RowsAndColsSatisfied):-markInicialCluesAux(0,Grid,RowsClues,ColsClues,RowsAndColsSatisfied).
 
 %markInicialCluesAux(+Position,+Grid,+AllRowsClues,+AllColsClues,-RowsAndColsSatisfied)
-markInicialCluesAux(_P, _G, [], [], [[],[]]).
-markInicialCluesAux(P, Grid, [RowClue|RowClues], [ColClue|ColClues], [[RowSat|RowSats],[ColSat|ColSats]]) :-
-    searchColumn(P, Grid, Column),
-	searchIndex(P, Grid, Row),
+markInicialCluesAux(_Position, _Grid, [], [], [[],[]]).
+markInicialCluesAux(Position, Grid, [RowClue|RowClues], [ColClue|ColClues], [[RowSat|RowSats],[ColSat|ColSats]]) :-
+    searchColumn(Position, Grid, Column),
+	searchIndex(Position, Grid, Row),
     checkClues(ColClue, Column, ColSat),
     checkClues(RowClue, Row, RowSat),
-	NewP is P + 1,
-    markInicialCluesAux(NewP, Grid, RowClues, ColClues, [RowSats,ColSats]).
+	NewPosition is Position + 1,
+    markInicialCluesAux(NewPosition, Grid, RowClues, ColClues, [RowSats,ColSats]).
 %if there are more columns than rows
-markInicialCluesAux(P, Grid, [], [ColClue|ColClues], [[0|RowSats],[ColSat|ColSats]]):-
-	searchColumn(P, Grid, Column),
+markInicialCluesAux(Position, Grid, [], [ColClue|ColClues], [[0|RowSats],[ColSat|ColSats]]):-
+	searchColumn(Position, Grid, Column),
     checkClues(ColClue, Column, ColSat),
-	NewP is P + 1,
-    markInicialCluesAux(NewP, Grid, [], ColClues, [RowSats,ColSats]).
+	NewPosition is Position + 1,
+    markInicialCluesAux(NewPosition, Grid, [], ColClues, [RowSats,ColSats]).
 %if there are more rows than columns
-markInicialCluesAux(P, Grid, [RowClue|RowClues], [], [[RowSat|RowSats],[0|ColSats]]):-
-	searchIndex(P, Grid, Row),
+markInicialCluesAux(Position, Grid, [RowClue|RowClues], [], [[RowSat|RowSats],[0|ColSats]]):-
+	searchIndex(Position, Grid, Row),
     checkClues(RowClue, Row, RowSat),
-	NewP is P + 1,
-    markInicialCluesAux(NewP, Grid, RowClues, [], [RowSats,ColSats]).
+	NewPosition is Position + 1,
+    markInicialCluesAux(NewPosition, Grid, RowClues, [], [RowSats,ColSats]).
 %
 % put(+Content, +Pos, +RowsClues, +ColsClues, +Grid, -NewGrid, -RowSat, -ColSat).
 %
@@ -106,7 +107,7 @@ put(Content, [RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, RowSat, ColSat):
 
 %checkWinner(+Position, +Grid, +AllRowClues, +AllColumnClues, -isWinner).                              
 %base success case
-checkWinner(_P,_G,[],[],1).
+checkWinner(_Position,_Grid,[],[],1).
 %if there are more columns than rows
 checkWinner(Position,Grid,[],[ColumnClue|ColumnClues],IsWinner):-
 
@@ -125,7 +126,7 @@ checkWinner(Position,Grid,[RowClue|RowClues],[],IsWinner):-
 	RowSat == 1, NewPosition  = Position+1,
 	checkWinner(NewPosition, Grid, RowClues, [], IsWinner).
 
-checkWinner(Position,Grid,[RowClue|RowClues],[ColumnClue|ColumnClues],W):-
+checkWinner(Position,Grid,[RowClue|RowClues],[ColumnClue|ColumnClues],IsWinner):-
 
 	searchColumn(Position,Grid,NewColumn),
 	checkClues(ColumnClue, NewColumn,ColSat),
@@ -134,9 +135,9 @@ checkWinner(Position,Grid,[RowClue|RowClues],[ColumnClue|ColumnClues],W):-
 	checkClues(RowClue, NewRow,RowSat),
 
 	RowSat == 1, ColSat == 1, NewPosition  = Position+1,
-	checkWinner(NewPosition, Grid, RowClues, ColumnClues, W).
+	checkWinner(NewPosition, Grid, RowClues, ColumnClues, IsWinner).
 %base failure case
-checkWinner(_P,_G,_R,_C,0).	
+checkWinner(_Position,_Grid,_RowClues,_ColumnClues,0).	
 
 %%getGrid no funciona,entra en un ciclo infinito, pero se tendria q poder hacer, REVISAR
 completeRow(0,[]).
@@ -169,8 +170,6 @@ generate_row(X, [Element|Rest]) :-
     generate_row(X1, Rest).           % Generar los elementos restantes de la fila
 generateTrueAnswer(X,Y,RC,CC,Grid):-generate_grid_permutations(X, Y,RC, Grid),checkWinner(0,Grid,[],CC,1).
 getGrid(RC,CC, NG):-length(RC,I),completeGridMask(RC,CC,I,NG).
-
-
 
 
 %%%%%%%%%%%%%%%%%
