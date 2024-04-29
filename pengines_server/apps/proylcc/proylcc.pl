@@ -105,33 +105,33 @@ put(Content, [RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, RowSat, ColSat):
 %base succes case
 checkWinner(_P,_G,[],[],1).
 %if there are more columns than rows
-checkWinner(P,G,[],[CC|CCs],W):-
+checkWinner(Position,Grid,[],[ColumnClue|ColumnClues],IsWinner):-
 
-	searchColumn(P,G,NewColumn),
-	checkClues(CC, NewColumn,ColSat),
+	searchColumn(Position,Grid,NewColumn),
+	checkClues(ColumnClue, NewColumn,ColumnSatisfaction),
 	
 
-	ColSat == 1, NewP  = P+1,
-	checkWinner(NewP, G, [], CCs, W).
+	ColSat == 1, NewPosition  = Position+1,
+	checkWinner(NewPosition, Grid, [], ColumnClues, IsWinner).
 %if there are more rows than columns
-checkWinner(P,G,[RC|RCs],[],W):-
+checkWinner(Position,Grid,[RowClue|RowClues],[],IsWinner):-
 	
-	searchIndex(P,G,NewRow),
-	checkClues(RC, NewRow,RowSat),
+	searchIndex(Position,Grid,NewRow),
+	checkClues(RowClue, NewRow,RowSat),
 
-	RowSat == 1, NewP  = P+1,
-	checkWinner(NewP, G, RCs, [], W).
+	RowSat == 1, NewPosition  = Position+1,
+	checkWinner(NewPosition, Grid, RowClues, [], IsWinner).
 
-checkWinner(P,G,[RC|RCs],[CC|CCs],W):-
+checkWinner(Position,Grid,[RowClue|RowClues],[ColumnClue|ColumnClues],W):-
 
-	searchColumn(P,G,NewColumn),
-	checkClues(CC, NewColumn,ColSat),
+	searchColumn(Position,Grid,NewColumn),
+	checkClues(ColumnClue, NewColumn,ColSat),
 	
-	searchIndex(P,G,NewRow),
-	checkClues(RC, NewRow,RowSat),
+	searchIndex(Position,Grid,NewRow),
+	checkClues(RowClue, NewRow,RowSat),
 
-	RowSat == 1, ColSat == 1, NewP  = P+1,
-	checkWinner(NewP, G, RCs, CCs, W).
+	RowSat == 1, ColSat == 1, NewPosition  = Position+1,
+	checkWinner(NewPosition, Grid, RowClues, ColumnClues, W).
 	
 checkWinner(_P,_G,_R,_C,0).	
 

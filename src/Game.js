@@ -10,7 +10,7 @@ function Game() {
   const [colsClues, setColsClues] = useState(null);
   const [waiting, setWaiting] = useState(false);
   const [isCrossing, setIsCrossing] = useState(false);
-  const [RS, setRS] = useState(null);
+  const [GameSatisfaction, setGameSatisfaction] = useState(null);
   const [highlightedClueCoords,setHighLightedClueCoords] = useState(null);
   //starts the server
   useEffect(() => {
@@ -38,7 +38,7 @@ function Game() {
       const queryT = `checkWinner(${0}, ${squaresS2}, ${rowClues}, ${colClues}, IsWinner)`;
       pengine.query(queryT, (success2, response2) => {
         if (success2) {
-          setRS(response2['IsWinner']);
+          setGameSatisfaction(response2['IsWinner']);
           if(response2['IsWinner']===1)
             setWaiting(true);
         }
@@ -81,12 +81,12 @@ function Game() {
     window.location.reload();
   };
 
-  const statusText = RS === 0 ? 'Keep playing!' : 'You won!';
+  const statusText = GameSatisfaction === 0 ? 'Keep playing!' : 'You won!';
   return (
   <CenteredContainer>
    
       {/*this is shown when the player wins*/}
-      {RS === 1 && (
+      {GameSatisfaction === 1 && (
         <div className="alert" >
           <p>¡You Won! Press OK to restart.</p>
           <button onClick={handleOkClick}>OK</button>
@@ -94,7 +94,7 @@ function Game() {
       )}
 
       {/* this is shown while the player is playing*/}
-      {RS === 0 &&
+      {GameSatisfaction === 0 &&
       (<div><div className="game">
         <Board
           grid={grid}

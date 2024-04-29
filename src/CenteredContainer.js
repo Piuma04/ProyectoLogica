@@ -1,4 +1,4 @@
-import bg from './toad.jpg';
+import bg from './toad.png';
 function CenteredContainer({ children }) {
   return (
     <div style={{
@@ -11,7 +11,7 @@ function CenteredContainer({ children }) {
       backgroundImage: `url(${bg})`,
       //backgroundColor: 'yellow',
       backgroundRepeat: 'no-repeat',
-      //backgroundSize: 'cover',
+      backgroundSize: 'cover',
       margin: 0, // Elimina cualquier margen predeterminado
       padding: 0, // Elimina cualquier relleno predeterminado
     }}>
