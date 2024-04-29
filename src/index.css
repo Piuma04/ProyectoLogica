@@ -152,7 +152,7 @@ body {
       justify-content: center;
       align-items: center;
       height: auto;
-      min-height: 100vw;
+      min-height: 100vh;
       max-height: max-content;
       width: auto;
       min-width: 100vw;
