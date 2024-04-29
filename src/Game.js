@@ -81,7 +81,6 @@ function Game() {
     window.location.reload();
   };
 
-  const statusText ='Keep playing!' ;
   return (
   <CenteredContainer>
    
@@ -115,12 +114,12 @@ function Game() {
           />
           </div>
         <div className="game-info">
-            {GameSatisfaction === 0 && statusText}
+            {GameSatisfaction === 0 && (<div className = "KP">Keep Playing!</div>)}
             {GameSatisfaction === 1 && (
               <div className="alert" >
-                <p>¡You Won!  \n
+                <p>¡You Won!  < br/>
                   Press OK to restart.</p>
-                <button onClick={handleOkClick}>OK</button>
+                <button className="okButton" onClick={handleOkClick}>OK</button>
               </div>
             )}
         </div>
