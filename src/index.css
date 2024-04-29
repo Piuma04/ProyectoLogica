@@ -23,7 +23,7 @@ body {
 
 .KP{
   font-size: 16px;
-  color: rgb(0, 208, 255);
+  color: rgb(255, 0, 0);
   height: 40px;
   padding: 10px;
   font-family: Arial;
@@ -35,7 +35,7 @@ body {
   width: 151px;
   height: 40px;
   font-size: 16px;
-  color: rgb(0, 208, 255);
+  color: rgb(255, 0, 0);
   font-family: Arial;
   font-weight: bolder;
 }
