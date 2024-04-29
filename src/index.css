@@ -1,3 +1,5 @@
+
+
 * {
   box-sizing: border-box;
 }
@@ -142,4 +144,23 @@ body {
   padding : 10px;
   justify-content: center;
   align-items: center;
+}
+
+.centeredContainer{
+      display: flex;
+      flex-direction:column;
+      justify-content: center;
+      align-items: center;
+      height: auto;
+      min-height: 100vw;
+      max-height: max-content;
+      width: auto;
+      min-width: 100vw;
+      max-width: max-content;
+      background-image: url("./toad.png");
+      /*backgroundColor: 'yellow';*/
+      background-repeat: no-repeat;
+      background-size: cover;
+      margin: 0;
+      padding: 0;
 }

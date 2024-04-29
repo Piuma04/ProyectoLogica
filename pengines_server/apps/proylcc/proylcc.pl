@@ -47,11 +47,11 @@ searchIndex(Index,[_X|Xs],Elem):- Index > 0, NewIndex is Index-1, searchIndex(Ne
 %checkClues(_X,_Y,_Z,_W,0).
 %
 
-
+%checkClues(+Clues,+GridStructure,-SatisfiesClues)
 checkClues([],[],1).
-checkClues(Clue,[X|Xs],S):-X\=="#",checkClues(Clue,Xs,S).
-checkClues([X|Xs],List,S):-checkFollowing(X,List,[R|Rs]),R\=="#",checkClues(Xs,[R|Rs],S).
-checkClues([X|Xs],List,S):-checkFollowing(X,List,[]),checkClues(Xs,[],S).
+checkClues(Clue,[Elem|Elems],S):-Elem\=="#",checkClues(Clue,Elems,S).
+checkClues([Clue|Clues],List,S):-checkFollowing(Clue,List,[R|Rs]),R\=="#",checkClues(Clues,[R|Rs],S).
+checkClues([Clue|Clues],List,S):-checkFollowing(Clue,List,[]),checkClues(Clues,[],S).
 checkClues(_Clue,_List,0).
 
 checkFollowing(0,Residual,Residual).
@@ -59,29 +59,32 @@ checkFollowing(Cant,[Y|Ys],Residual):-Y=="#",NewCant is Cant-1,checkFollowing(Ne
 
 %searchColumn(+ColumnNumber,+Grid,-Column).
 searchColumn(_ColN, [], []).
-searchColumn(ColN,[X|Xs],[Y|Ys]):-searchIndex(ColN,X,Y),searchColumn(ColN,Xs,Ys).
+searchColumn(ColN,[Row|Rows],[Elem|Elems]):-searchIndex(ColN,Row,Elem),searchColumn(ColN,Rows,Elems).
 
-markInicialClues(G,RowsClues,ColsClues,Res):-markInicialCluesAux(0,G,RowsClues,ColsClues,Res).
+%markInicialClues(+Grid,+AllRowsClues,+AllColsClues,-RowsAndColsSatisfied)
+markInicialClues(Grid,RowsClues,ColsClues,Res):-markInicialCluesAux(0,Grid,RowsClues,ColsClues,Res).
+
+%markInicialCluesAux(+Position,+Grid,+AllRowsClues,+AllColsClues,-RowsAndColsSatisfied)
 markInicialCluesAux(_P, _G, [], [], [[],[]]).
-markInicialCluesAux(P, G, [RC|RCs], [CC|CCs], [[RS|RSs],[CS|CSs]]) :-
-    searchColumn(P, G, Column),
-	searchIndex(P, G, Row),
-    checkClues(CC, Column, CS),
-    checkClues(RC, Row, RS),
+markInicialCluesAux(P, Grid, [RowClue|RowClues], [ColClue|ColClues], [[RowSat|RowSats],[ColSat|ColSats]]) :-
+    searchColumn(P, Grid, Column),
+	searchIndex(P, Grid, Row),
+    checkClues(ColClue, Column, ColSat),
+    checkClues(RowClue, Row, RowSat),
 	NewP is P + 1,
-    markInicialCluesAux(NewP, G, RCs, CCs, [RSs,CSs]).
+    markInicialCluesAux(NewP, Grid, RowClues, ColClues, [RowSats,ColSats]).
 %if there are more columns than rows
-markInicialCluesAux(P, G, [], [CC|CCs], [[0|RSs],[CS|CSs]]):-
-	searchColumn(P, G, Column),
-    checkClues(CC, Column, CS),
+markInicialCluesAux(P, Grid, [], [ColClue|ColClues], [[0|RowSats],[ColSat|ColSats]]):-
+	searchColumn(P, Grid, Column),
+    checkClues(ColClue, Column, ColSat),
 	NewP is P + 1,
-    markInicialCluesAux(NewP, G, [], CCs, [RSs,CSs]).
+    markInicialCluesAux(NewP, Grid, [], ColClues, [RowSats,ColSats]).
 %if there are more rows than columns
-markInicialCluesAux(P, G, [RC|RCs], [], [[RS|RSs],[0|CSs]]):-
-	searchIndex(P, G, Row),
-    checkClues(RC, Row, RS),
+markInicialCluesAux(P, Grid, [RowClue|RowClues], [], [[RowSat|RowSats],[0|ColSats]]):-
+	searchIndex(P, Grid, Row),
+    checkClues(RowClue, Row, RowSat),
 	NewP is P + 1,
-    markInicialCluesAux(NewP, G, RCs, [], [RSs,CSs]).
+    markInicialCluesAux(NewP, Grid, RowClues, [], [RowSats,ColSats]).
 %
 % put(+Content, +Pos, +RowsClues, +ColsClues, +Grid, -NewGrid, -RowSat, -ColSat).
 %
@@ -102,13 +105,13 @@ put(Content, [RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, RowSat, ColSat):
 	checkClues(RowsClueList, NewRow,RowSat).
 
 %checkWinner(+Position, +Grid, +AllRowClues, +AllColumnClues, -isWinner).                              
-%base succes case
+%base success case
 checkWinner(_P,_G,[],[],1).
 %if there are more columns than rows
 checkWinner(Position,Grid,[],[ColumnClue|ColumnClues],IsWinner):-
 
 	searchColumn(Position,Grid,NewColumn),
-	checkClues(ColumnClue, NewColumn,ColumnSatisfaction),
+	checkClues(ColumnClue, NewColumn,ColSat),
 	
 
 	ColSat == 1, NewPosition  = Position+1,
@@ -132,7 +135,7 @@ checkWinner(Position,Grid,[RowClue|RowClues],[ColumnClue|ColumnClues],W):-
 
 	RowSat == 1, ColSat == 1, NewPosition  = Position+1,
 	checkWinner(NewPosition, Grid, RowClues, ColumnClues, W).
-	
+%base failure case
 checkWinner(_P,_G,_R,_C,0).	
 
 %%getGrid no funciona,entra en un ciclo infinito, pero se tendria q poder hacer, REVISAR
