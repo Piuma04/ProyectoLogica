@@ -8,7 +8,8 @@ function CenteredContainer({ children }) {
       alignItems: 'center',
       height: '100vh',
       width: '100vw',
-      backgroundImage: `url(${bg})`,
+      //backgroundImage: `url(${bg})`,
+      backgroundColor: 'yellow',
       backgroundRepeat: 'no-repeat',
       backgroundSize: 'cover',
       margin: 0, // Elimina cualquier margen predeterminado
