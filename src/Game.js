@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PengineClient from './PengineClient';
 import Board from './Board';
 import CenteredContainer from './CenteredContainer';
+import ModeSelector from './ModeSelector';
 let pengine;
 
 function Game() {
@@ -110,7 +111,6 @@ function Game() {
             <ModeSelector
               value={isCrossing?"X":"#"}
               changeBrush={() => setIsCrossing(!isCrossing)}
-          
           />
           </div>
         <div className="game-info">
@@ -126,23 +126,5 @@ function Game() {
       </div>
       </div>
     </CenteredContainer>);
-}
-
-function ModeSelector({value,changeBrush})
-{
-  let elem;
-  if(value === "#") {
-  elem = (
-  <button 
-    className='Hbrush' onClick={changeBrush}>
-  </button>);
-  }else{
-    elem = (
-      <button 
-        
-        className='Xbrush' onClick={changeBrush}>
-      </button>);
-  }
-  return elem;
 }
 export default Game;

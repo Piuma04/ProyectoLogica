@@ -55,18 +55,77 @@ body {
   padding: 0;
   text-align: center;
 }
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #03b3b9;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #9c9c9c;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #9c9c9c;
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+/* Style the text inside the switch */
+.Hbrush {
+  width: 15px; /* Ancho del cuadrado */
+  height: 15px; /* Altura del cuadrado */
+  background-color: #000; /* Color de fondo negro */
+  position: absolute;
+  transform: translate(40%, -50%);
+  top: 50%;
+  left: 50%;
+}
 
 .Xbrush {
-  width: 40px; /* Ancho del cuadrado */
-  height: 40px; /* Altura del cuadrado */
-  background-color: #b37d7d;
-  border: 5px solid #b37d7d;
+  width: 25px; /* Ancho del cuadrado */
+  height: 25px; /* Altura del cuadrado */
   font-size: 20px;
   font-weight: bold;
   text-align: center;
-  position: relative;
+  position: absolute;
+  transform: translate(-100%, -50%);
+  top: 50%;
+  left: 50%;
 }
-
 .Xbrush::before,
 .Xbrush::after {
   content: '';
@@ -86,12 +145,21 @@ body {
 .Xbrush::after {
   transform: translateX(-50%) rotate(-45deg); /* Inclina la línea para formar la X */
 }
-.Hbrush {
-  width: 40px; /* Ancho del cuadrado */
-  height: 40px; /* Altura del cuadrado */
-  background-color: #000; /* Color de fondo negro */
-  border: 5px solid #b37d7d;
-  position: relative;
+ /* Hide the off text when switch is on and vice versa */
+ input:checked + .slider .Hbrush {
+  display: block;
+}
+
+input:checked + .slider .Xbrush {
+  display: none;
+}
+
+input:not(:checked) + .slider .Hbrush {
+  display: none;
+}
+
+input:not(:checked) + .slider .Xbrush {
+  display: block;
 }
 
 .board {
