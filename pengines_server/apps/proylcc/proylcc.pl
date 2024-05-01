@@ -12,40 +12,9 @@ replace(X, XIndex, Y, [Xi|Xs], [Xi|XsY]):-
     XIndexS is XIndex - 1,
     replace(X, XIndexS, Y, Xs, XsY).
 
-
-
 %searchIndex(+Index,+List,-IndexedElement). Searches indexed element in list.
 searchIndex(0,[X|_Xs],X).
 searchIndex(Index,[_X|Xs],Elem):- Index > 0, NewIndex is Index-1, searchIndex(NewIndex,Xs,Elem).
-
-
-%checkCluesMask(+GridStrcutureClues,+GridStrcuture,-isSatisfied).
-%checkClues(X,Y,Sat):-checkClues(X,Y,Sat).
-
-%
-%checkClues(+GridStrcutureClues,+GridStrcuture,+CurrentGridStrcutureClue,-isSatisfied).
-%
-%checkClues(+GridStrcutureClues,+GridStrcuture,-isSatisfied).
-%checkClues(X,Y,Sat):-checkClues(X,Y,_,-1,Sat).
-
-%
-%checkClues(+GridStrcutureClues,+GridStrcuture,+CurrentGridStrcutureClue,-isSatisfied).
-%
-
-%si se llega a este caso base significa que la estructura se corresponde con las pistas
-%checkClues([],[],_L,0,1).
-%casos para cuando se encontro un # y se empieza a veirficicar si se corresponde con las pistas
-%checkClues(X,[E|R],_L,N,S):- E == "#", N>0, NewN is N-1, checkClues(X, R,E,NewN,S).
-%checkClues(X,[E|R],_L,0,S):-E\=="#", checkClues(X,R,E,0,S).
-%checkClues([X|Xr],[E|R],L,0,S):-E== "#",L\=="#", checkClues(Xr,[E|R],L,X,S).
-%casos para cuando recien se comienza y todavia no se encontro con ningun #
-%checkClues(X,[E|R],_L,-1,S):-E\=="#", checkClues(X,R,E,-1,S).
-%checkClues([X|Xr],R,L,-1,S):- checkClues(Xr,R,L,X,S).
-%caso para cuando ya se completaron todas las pistas
-%checkClues([],[E|R],_L,0,S):-E\=="#", checkClues([],R,E,0,S).
-%si alguno de esos casos falla, se llega a este que devuelve 0 (significa que no esta completo)
-%checkClues(_X,_Y,_Z,_W,0).
-%
 
 %checkClues(+Clues,+Line,-SatisfiesClues). Given a clue and a line, specifies whether the clues are satisfied or not.
 checkClues([],[],1).
@@ -146,46 +115,27 @@ completeGrid(_RL,0,[],[]).
 completeGrid(RowLength,CantRows,[RC|RCs],[NR|G]):- completeRow(RowLength,NR), checkClues(RC,NR,S),S==1, NCC is CantRows - 1, completeGrid(RowLength,NCC, RCs,G).
 
 % Predicado para generar todas las permutaciones posibles de una grilla de X por Y con elementos "X" y "#"
-generate_grid_permutations(X, Y,RC, Grid) :-
-    length(Grid, Y),                   % La longitud de la grilla debe ser Y
-    generate_rows(X, Y,RC, Grid).         % Generar las filas de la grilla
+%generate_grid_permutations(X, Y,RC, Grid) :-
+%    length(Grid, Y),                   % La longitud de la grilla debe ser Y
+%    generate_rows(X, Y,RC, Grid).         % Generar las filas de la grilla
 
 % Generar las filas de la grilla
-generate_rows(_, 0,[], []).              % Caso base: Cuando se han generado todas las filas
-generate_rows(X, Y,[RC|RCs], [Row|RestRows]) :-
-    Y > 0,                            % Asegurarse de que Y sea mayor que 0
-    Y1 is Y - 1,                      % Decrementar Y en 1 para la siguiente fila
-    length(Row, X),                   % La longitud de cada fila debe ser X
-    generate_row(X, Row), 
-	checkClues(RC,Row,Sat),
-	Sat==1,            % Generar la fila
-    generate_rows(X, Y1,RCs, RestRows).   % Generar las filas restantes
+%generate_rows(_, 0,[], []).              % Caso base: Cuando se han generado todas las filas
+%generate_rows(X, Y,[RC|RCs], [Row|RestRows]) :-
+%    Y > 0,                            % Asegurarse de que Y sea mayor que 0
+%    Y1 is Y - 1,                      % Decrementar Y en 1 para la siguiente fila
+%    length(Row, X),                   % La longitud de cada fila debe ser X
+%    generate_row(X, Row), 
+%	checkClues(RC,Row,Sat),
+%	Sat==1,            % Generar la fila
+%   generate_rows(X, Y1,RCs, RestRows).   % Generar las filas restantes
 
 % Generar una fila con elementos "X" y "#"
-generate_row(0, []).                  % Caso base: Cuando se han generado todos los elementos de la fila
-generate_row(X, [Element|Rest]) :-
-    X > 0,                            % Asegurarse de que X sea mayor que 0
-    X1 is X - 1,                      % Decrementar X en 1 para el siguiente elemento
-    (Element = "X" ; Element = "#"), % El elemento puede ser 'X' o '#'
-    generate_row(X1, Rest).           % Generar los elementos restantes de la fila
-generateTrueAnswer(X,Y,RC,CC,Grid):-generate_grid_permutations(X, Y,RC, Grid),checkWinner(0,Grid,[],CC,1).
-getGrid(RC,CC, NG):-length(RC,I),completeGridMask(RC,CC,I,NG).
-
-
-%%%%%%%%%%%%%%%%%
-%%Testing stuff%%
-%%%%%%%%%%%%%%%%%
-%
-%getGrid([[1],[2]],[[2],[1]],G).
-%trace, put("#",[0,1],[[3], [1,2], [4], [5], [5]],[[2], [5], [1,3], [5], [4]],[["X","#","#","#","X"],["X","#","X","#","#"],["X","#","#","#","#"],["#","#","#","#","#"],["#","#","#","#","#"]],NG,Rs,Cs).
-%
-%checkWinner(0,[["X","#","#","#","X"],
-%				["X","#","X","#","#"],
-%				["X","#","#","#","#"],
-%				["#","#","#","#","#"],
-% 			 	["#","#","#","#","#"]],
-% 				[[3], [1,2], [4], [5], [5]],
-%				[[2], [5], [1,3], [5], [4]],
-%				IsWinner).
-%
-%checkWinner(0,[["X","#","#","X","X"],["X","#","X","#","#"],["X","#","#","#","#"],["#","#","#","#","#"],["#","#","#","#","#"]],[[3], [1,2], [4], [5], [5]],[[2], [5], [1,3], [5], [4]],IsWinner).
+%generate_row(0, []).                  % Caso base: Cuando se han generado todos los elementos de la fila
+%generate_row(X, [Element|Rest]) :-
+%    X > 0,                            % Asegurarse de que X sea mayor que 0
+%    X1 is X - 1,                      % Decrementar X en 1 para el siguiente elemento
+%    (Element = "X" ; Element = "#"), % El elemento puede ser 'X' o '#'
+%    generate_row(X1, Rest).           % Generar los elementos restantes de la fila
+%generateTrueAnswer(X,Y,RC,CC,Grid):-generate_grid_permutations(X, Y,RC, Grid),checkWinner(0,Grid,[],CC,1).
+%getGrid(RC,CC, NG):-length(RC,I),completeGridMask(RC,CC,I,NG).
