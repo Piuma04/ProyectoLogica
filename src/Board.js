@@ -7,8 +7,6 @@ function Board({ grid, rowsClues, colsClues, onClick, highlightedClueCoords }) {
     const numOfCols = grid[0].length;
     const maxNumbersRow = computeMax(rowsClues)=== 1 ? 60 : computeMax(rowsClues)  * 20;
     const maxNumbersCol = computeMax(colsClues) === 1 ? 60 :  computeMax(colsClues) * 30;
-    console.log(maxNumbersCol);
-    console.log(maxNumbersRow);
    
     return (
         
