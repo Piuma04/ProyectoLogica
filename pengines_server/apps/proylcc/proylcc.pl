@@ -75,13 +75,13 @@ markInicialCluesAux(Position, Grid, [RowClue|RowClues], [ColClue|ColClues], [[Ro
 	NewPosition is Position + 1,
     markInicialCluesAux(NewPosition, Grid, RowClues, ColClues, [RowSats,ColSats]).
 %if there are more columns than rows
-markInicialCluesAux(Position, Grid, [], [ColClue|ColClues], [[0|RowSats],[ColSat|ColSats]]):-
+markInicialCluesAux(Position, Grid, [], [ColClue|ColClues], [RowSats,[ColSat|ColSats]]):-
 	searchColumn(Position, Grid, Column),
     checkClues(ColClue, Column, ColSat),
 	NewPosition is Position + 1,
     markInicialCluesAux(NewPosition, Grid, [], ColClues, [RowSats,ColSats]).
 %if there are more rows than columns
-markInicialCluesAux(Position, Grid, [RowClue|RowClues], [], [[RowSat|RowSats],[0|ColSats]]):-
+markInicialCluesAux(Position, Grid, [RowClue|RowClues], [], [[RowSat|RowSats],ColSats]):-
 	searchIndex(Position, Grid, Row),
     checkClues(RowClue, Row, RowSat),
 	NewPosition is Position + 1,
