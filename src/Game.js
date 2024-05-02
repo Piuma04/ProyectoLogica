@@ -84,16 +84,6 @@ function Game() {
 
   return (
   <CenteredContainer>
-   
-      
-      {/*GameSatisfaction === 1 && (
-        <div className="alert" >
-          <p>¡You Won! Press OK to restart.</p>
-          <button onClick={handleOkClick}>OK</button>
-        </div>
-      )*/}
-
-      
       
       <div><div className="game">
         <Board

@@ -108,34 +108,5 @@ checkWinner(Position,Grid,[RowClue|RowClues],[ColumnClue|ColumnClues],IsWinner):
 %base failure case
 checkWinner(_Position,_Grid,_RowClues,_ColumnClues,0).	
 
-%%getGrid no funciona,entra en un ciclo infinito, pero se tendria q poder hacer, REVISAR
-completeRow(0,[]).
-completeRow(L,[E|R]):-Nl is L-1, completeRow(Nl,R),(E="#";E="_").
-completeGrid(_RL,0,[],[]).
-completeGrid(RowLength,CantRows,[RC|RCs],[NR|G]):- completeRow(RowLength,NR), checkClues(RC,NR,S),S==1, NCC is CantRows - 1, completeGrid(RowLength,NCC, RCs,G).
 
-% Predicado para generar todas las permutaciones posibles de una grilla de X por Y con elementos "X" y "#"
-%generate_grid_permutations(X, Y,RC, Grid) :-
-%    length(Grid, Y),                   % La longitud de la grilla debe ser Y
-%    generate_rows(X, Y,RC, Grid).         % Generar las filas de la grilla
 
-% Generar las filas de la grilla
-%generate_rows(_, 0,[], []).              % Caso base: Cuando se han generado todas las filas
-%generate_rows(X, Y,[RC|RCs], [Row|RestRows]) :-
-%    Y > 0,                            % Asegurarse de que Y sea mayor que 0
-%    Y1 is Y - 1,                      % Decrementar Y en 1 para la siguiente fila
-%    length(Row, X),                   % La longitud de cada fila debe ser X
-%    generate_row(X, Row), 
-%	checkClues(RC,Row,Sat),
-%	Sat==1,            % Generar la fila
-%   generate_rows(X, Y1,RCs, RestRows).   % Generar las filas restantes
-
-% Generar una fila con elementos "X" y "#"
-%generate_row(0, []).                  % Caso base: Cuando se han generado todos los elementos de la fila
-%generate_row(X, [Element|Rest]) :-
-%    X > 0,                            % Asegurarse de que X sea mayor que 0
-%    X1 is X - 1,                      % Decrementar X en 1 para el siguiente elemento
-%    (Element = "X" ; Element = "#"), % El elemento puede ser 'X' o '#'
-%    generate_row(X1, Rest).           % Generar los elementos restantes de la fila
-%generateTrueAnswer(X,Y,RC,CC,Grid):-generate_grid_permutations(X, Y,RC, Grid),checkWinner(0,Grid,[],CC,1).
-%getGrid(RC,CC, NG):-length(RC,I),completeGridMask(RC,CC,I,NG).
