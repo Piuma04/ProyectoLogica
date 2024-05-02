@@ -26,7 +26,6 @@ function Game() {
         setRowsClues(response['RowClues']);
         setColsClues(response['ColumClues']);
         setHighLightedClueCoords(response['GridSat']);
-       //que verga es esto?? SVGAnimatedPreserveAspectRatio(0);
       }
     });
   } 
@@ -49,27 +48,23 @@ function Game() {
   }, [grid,rowsClues,colsClues]);
   //handles the click
   function handleClick(i, j) {
-    //console.log(highlightedClueCoords);
     if (!waiting) {
-      
-    
     const squaresS = JSON.stringify(grid).replaceAll('"_"', '_'); 
     const colClues = JSON.stringify(colsClues);
     const rowClues = JSON.stringify(rowsClues);
     const content = isCrossing?'X':'#';
 
     const queryS = `put("${content}", [${i},${j}], ${rowClues}, ${colClues},${squaresS}, ResGrid, RowSat, ColSat)`; 
-    console.log(highlightedClueCoords);
     
-      setWaiting(true);
-      pengine.query(queryS, (success, response) => {
+    setWaiting(true);
+    pengine.query(queryS, (success, response) => {
       
-        if (success) {
-          setGrid(response['ResGrid']);
-          highlightedClueCoords[0][i] = response['RowSat'];
-          highlightedClueCoords[1][j] = response['ColSat'];
-        }
-        setWaiting(false);
+      if (success) {
+        setGrid(response['ResGrid']);
+        highlightedClueCoords[0][i] = response['RowSat'];
+        highlightedClueCoords[1][j] = response['ColSat'];
+      }
+      setWaiting(false);
       });
     }
   }
@@ -84,7 +79,6 @@ function Game() {
 
   return (
   <CenteredContainer>
-      
       <div><div className="game">
         <Board
           grid={grid}
@@ -93,8 +87,6 @@ function Game() {
           onClick={(i, j) => handleClick(i, j)}
           highlightedClueCoords={highlightedClueCoords}
         />
-
-        
       </div>
       <div className="container" >
         <div className="game-info">

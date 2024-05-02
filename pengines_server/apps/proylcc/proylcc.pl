@@ -107,6 +107,3 @@ checkWinner(Position,Grid,[RowClue|RowClues],[ColumnClue|ColumnClues],IsWinner):
 	checkWinner(NewPosition, Grid, RowClues, ColumnClues, IsWinner).
 %base failure case
 checkWinner(_Position,_Grid,_RowClues,_ColumnClues,0).	
-
-
-
