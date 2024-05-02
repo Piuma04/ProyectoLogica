@@ -13,30 +13,31 @@ function Game() {
   const [isCrossing, setIsCrossing] = useState(false);
   const [GameSatisfaction, setGameSatisfaction] = useState(null);
   const [highlightedClueCoords,setHighLightedClueCoords] = useState(null);
+  const [currentLevel,setCurrentLevel] = useState(0);
+  const maxLevel = 2;
   //starts the server
   useEffect(() => {
     PengineClient.init(handleServerReady);
   }, []);
   function handleServerReady(instance) {
     pengine = instance;
-    const queryS = 'init(RowClues, ColumClues, Grid),markInicialClues(Grid,RowClues,ColumClues,GridSat)';
+    const queryS = 'init(RowClues, ColumClues, Grid),markInicialClues(Grid,RowClues,ColumClues,GridSat)'
     pengine.query(queryS, (success, response) => {
       if (success) {
         setGrid(response['Grid']);
         setRowsClues(response['RowClues']);
         setColsClues(response['ColumClues']);
         setHighLightedClueCoords(response['GridSat']);
-       //que verga es esto?? SVGAnimatedPreserveAspectRatio(0);
       }
     });
   } 
   //tell you if you won
   useEffect(() => {
     if(grid != null){
-      const squaresS2 = JSON.stringify(grid).replaceAll('"_"', '_');
+      const squaresS2 = JSON.stringify(grid).replaceAll('""', '');
       const colClues = JSON.stringify(colsClues);
       const rowClues = JSON.stringify(rowsClues);
-      const queryT = `checkWinner(${0}, ${squaresS2}, ${rowClues}, ${colClues}, IsWinner)`;
+      const queryT = `checkWinner(${0}, ${squaresS2}, ${rowClues}, ${colClues}, IsWinner)`
       pengine.query(queryT, (success2, response2) => {
         if (success2) {
           setGameSatisfaction(response2['IsWinner']);
@@ -49,17 +50,15 @@ function Game() {
   }, [grid,rowsClues,colsClues]);
   //handles the click
   function handleClick(i, j) {
-    //console.log(highlightedClueCoords);
     if (!waiting) {
       
     
-    const squaresS = JSON.stringify(grid).replaceAll('"_"', '_'); 
+    const squaresS = JSON.stringify(grid).replaceAll('""', ''); 
     const colClues = JSON.stringify(colsClues);
     const rowClues = JSON.stringify(rowsClues);
     const content = isCrossing?'X':'#';
 
     const queryS = `put("${content}", [${i},${j}], ${rowClues}, ${colClues},${squaresS}, ResGrid, RowSat, ColSat)`; 
-    console.log(highlightedClueCoords);
     
       setWaiting(true);
       pengine.query(queryS, (success, response) => {
@@ -78,10 +77,24 @@ function Game() {
   }
 
   const handleOkClick = () => {
-    // Reiniciar la página
-    window.location.reload();
+    setCurrentLevel(currentLevel+1);
+    if(waiting && currentLevel+1<=maxLevel)
+    {
+      const queryS = `level${currentLevel+1}(RowClues, ColumClues, Grid),markInicialClues(Grid,RowClues,ColumClues,GridSat)`;
+      setWaiting(true);
+      pengine.query(queryS, (success, response) => { 
+        if (success) {
+          setGrid(response['Grid']);
+          setRowsClues(response['RowClues']);
+          setColsClues(response['ColumClues']);
+          setHighLightedClueCoords(response['GridSat']);
+        }
+        setWaiting(false);
+      });
+    }
+    else
+       window.location.reload();
   };
-
   return (
   <CenteredContainer>
    
@@ -117,8 +130,7 @@ function Game() {
             {GameSatisfaction === 0 && (<div className = "KP">Keep Playing!</div>)}
             {GameSatisfaction === 1 && (
               <div className="alert" >
-                <p>¡You Won!  < br/>
-                  Press OK to restart.</p>
+                <p>¡You Won!</p>
                 <button className="okButton" onClick={handleOkClick}>OK</button>
               </div>
             )}
