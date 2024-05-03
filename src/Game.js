@@ -96,7 +96,7 @@ function Game() {
        window.location.reload();
   };
 
-  const beatedGameText = nextLevel-1 == maxLevel ? "You beated the game. Press OK to reload it." : "You WON! Press OK to load the next level.";
+  const beatedGameText = nextLevel-1 === maxLevel ? "You beated the game. Press OK to reload it." : "You WON! Press OK to load the next level.";
 
   return (
   <CenteredContainer>
