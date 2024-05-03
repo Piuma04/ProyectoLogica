@@ -108,6 +108,10 @@ checkWinner(Position,Grid,[RowClue|RowClues],[ColumnClue|ColumnClues],IsWinner):
 %base failure case
 checkWinner(_Position,_Grid,_RowClues,_ColumnClues,0).	
 
+
+
+%levelX(-RowsClues, -ColsClues, Grid).
+% X hace referencia al numero
 level1(
     [[6], [2,2], [2,2], [2],[3],[4],[2],[],[2],[2]],% RowsClues
     

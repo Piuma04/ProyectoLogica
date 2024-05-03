@@ -31,7 +31,7 @@ function Game() {
       }
     });
   } 
-  //tell you if you won
+  //tells you if you won
   useEffect(() => {
     if(grid != null){
       const squaresS2 = JSON.stringify(grid).replaceAll('"_"', '_');
