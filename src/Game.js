@@ -21,7 +21,7 @@ function Game() {
   }, []);
   function handleServerReady(instance) {
     pengine = instance;
-    const queryS = 'init(RowClues, ColumClues, Grid),markInicialClues(Grid,RowClues,ColumClues,GridSat)'
+    const queryS = 'init(RowClues, ColumClues, Grid),markInicialClues(Grid,RowClues,ColumClues,GridSat)';
     pengine.query(queryS, (success, response) => {
       if (success) {
         setGrid(response['Grid']);
@@ -34,10 +34,10 @@ function Game() {
   //tell you if you won
   useEffect(() => {
     if(grid != null){
-      const squaresS2 = JSON.stringify(grid).replaceAll('""', '');
+      const squaresS2 = JSON.stringify(grid).replaceAll('"_"', '_');
       const colClues = JSON.stringify(colsClues);
       const rowClues = JSON.stringify(rowsClues);
-      const queryT = `checkWinner(${0}, ${squaresS2}, ${rowClues}, ${colClues}, IsWinner)`
+      const queryT = `checkWinner(${0}, ${squaresS2}, ${rowClues}, ${colClues}, IsWinner)`;
       pengine.query(queryT, (success2, response2) => {
         if (success2) {
           setGameSatisfaction(response2['IsWinner']);
@@ -53,7 +53,7 @@ function Game() {
     if (!waiting) {
       
     
-    const squaresS = JSON.stringify(grid).replaceAll('""', ''); 
+    const squaresS = JSON.stringify(grid).replaceAll('"_"', '_'); 
     const colClues = JSON.stringify(colsClues);
     const rowClues = JSON.stringify(rowsClues);
     const content = isCrossing?'X':'#';
