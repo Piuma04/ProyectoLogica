@@ -95,16 +95,12 @@ function Game() {
     else
        window.location.reload();
   };
+
+  const beatedGameText = nextLevel-1 == maxLevel ? "You beated the game. Press OK to reload it." : "You WON! Press OK to load the next level.";
+
   return (
   <CenteredContainer>
    
-      
-      {/*GameSatisfaction === 1 && (
-        <div className="alert" >
-          <p>¡You Won! Press OK to restart.</p>
-          <button onClick={handleOkClick}>OK</button>
-        </div>
-      )*/}
        <p className='levelLabel'>Level {nextLevel-1}</p>
       <div><div className="game">
         <Board
@@ -126,12 +122,13 @@ function Game() {
           </div>
         <div className="game-info">
             {GameSatisfaction === 0 && (<div className = "KP">Keep Playing!</div>)}
-            {GameSatisfaction === 1 && (
+            {GameSatisfaction === 1  && (
               <div className="alert" >
-                <p>¡You Won!</p>
+                 <p>{beatedGameText}</p>
                 <button className="okButton" onClick={handleOkClick}>OK</button>
               </div>
             )}
+            
         </div>
       </div>
       </div>
