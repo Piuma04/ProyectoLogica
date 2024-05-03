@@ -13,7 +13,7 @@ function Game() {
   const [isCrossing, setIsCrossing] = useState(false);
   const [GameSatisfaction, setGameSatisfaction] = useState(null);
   const [highlightedClueCoords,setHighLightedClueCoords] = useState(null);
-  const [nextLevel,setCurrentLevel] = useState(1);
+  const [nextLevel,setNextLevel] = useState(1);
   const maxLevel = 2;
   //starts the server
   useEffect(() => {
@@ -77,7 +77,7 @@ function Game() {
   }
 
   const handleOkClick = () => {
-    setCurrentLevel(nextLevel+1);
+    setNextLevel(nextLevel+1);
     if(waiting && nextLevel<=maxLevel)
     {
       const queryS = `level${nextLevel}(RowClues, ColumClues, Grid),markInicialClues(Grid,RowClues,ColumClues,GridSat)`;
