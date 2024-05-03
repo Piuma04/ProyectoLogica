@@ -226,6 +226,10 @@ input:not(:checked) + .slider .Xbrush {
   margin-left: 20px;
 }
 
+.levelLabel {
+  font-size: 25px;
+  font-style: bolder;
+}
 .container{
   display: flex;
   flex-direction: row;

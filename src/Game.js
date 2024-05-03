@@ -13,7 +13,7 @@ function Game() {
   const [isCrossing, setIsCrossing] = useState(false);
   const [GameSatisfaction, setGameSatisfaction] = useState(null);
   const [highlightedClueCoords,setHighLightedClueCoords] = useState(null);
-  const [currentLevel,setCurrentLevel] = useState(0);
+  const [nextLevel,setCurrentLevel] = useState(1);
   const maxLevel = 2;
   //starts the server
   useEffect(() => {
@@ -77,10 +77,10 @@ function Game() {
   }
 
   const handleOkClick = () => {
-    setCurrentLevel(currentLevel+1);
-    if(waiting && currentLevel+1<=maxLevel)
+    setCurrentLevel(nextLevel+1);
+    if(waiting && nextLevel<=maxLevel)
     {
-      const queryS = `level${currentLevel+1}(RowClues, ColumClues, Grid),markInicialClues(Grid,RowClues,ColumClues,GridSat)`;
+      const queryS = `level${nextLevel}(RowClues, ColumClues, Grid),markInicialClues(Grid,RowClues,ColumClues,GridSat)`;
       setWaiting(true);
       pengine.query(queryS, (success, response) => { 
         if (success) {
@@ -105,9 +105,7 @@ function Game() {
           <button onClick={handleOkClick}>OK</button>
         </div>
       )*/}
-
-      
-      
+       <p className='levelLabel'>Level {nextLevel-1}</p>
       <div><div className="game">
         <Board
           grid={grid}
