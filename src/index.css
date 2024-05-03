@@ -20,7 +20,10 @@ body {
   padding: 0;
   text-align: center;
 } 
-
+.levelsGrid
+{
+  margin-left: 30px;
+}
 .KP{
   font-size: 16px;
   color: rgb(255, 0, 0);

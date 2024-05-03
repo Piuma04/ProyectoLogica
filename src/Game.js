@@ -96,13 +96,46 @@ function Game() {
        window.location.reload();
   };
 
+  const goToLevel = (i) => {
+  if(!waiting)
+  {
+        setNextLevel(i+1);
+    if(i==0)
+      {
+        const queryT = `init(RowClues, ColumClues, Grid),markInicialClues(Grid,RowClues,ColumClues,GridSat)`;
+        setWaiting(true);
+        pengine.query(queryT, (success, response) => { 
+        if (success) {
+          setGrid(response['Grid']);
+          setRowsClues(response['RowClues']);
+          setColsClues(response['ColumClues']);
+          setHighLightedClueCoords(response['GridSat']);
+        }
+        setWaiting(false);
+      });
+      }
+    else
+    {
+      const queryS = `level${i}(RowClues, ColumClues, Grid),markInicialClues(Grid,RowClues,ColumClues,GridSat)`;
+      setWaiting(true);
+      pengine.query(queryS, (success, response) => { 
+        if (success) {
+          setGrid(response['Grid']);
+          setRowsClues(response['RowClues']);
+          setColsClues(response['ColumClues']);
+          setHighLightedClueCoords(response['GridSat']);
+        }
+        setWaiting(false);
+      });
+    }
+  }
+  };
   const beatedGameText = nextLevel-1 === maxLevel ? "You beated the game. Press OK to reload it." : "You WON! Press OK to load the next level.";
-
   return (
   <CenteredContainer>
    
        <p className='levelLabel'>Level {nextLevel-1}</p>
-      <div><div className="game">
+       <div><div className="game">
         <Board
           grid={grid}
           rowsClues={rowsClues}
@@ -110,8 +143,13 @@ function Game() {
           onClick={(i, j) => handleClick(i, j)}
           highlightedClueCoords={highlightedClueCoords}
         />
-
-        
+         <div className="levelsGrid">
+        {Array.from({ length: maxLevel+1 }, (_, index) => (
+          <div key={index} className="levelLabel">
+            <button onClick={() => goToLevel(index)}>Level {index}</button>
+          </div>
+        ))}
+      </div> 
       </div>
       <div className="container" >
         <div className="game-info">
