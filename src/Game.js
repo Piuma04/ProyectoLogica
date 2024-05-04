@@ -100,7 +100,7 @@ function Game() {
   if(!waiting)
   {
         setNextLevel(i+1);
-    if(i==0)
+    if(i===0)
       {
         const queryT = `init(RowClues, ColumClues, Grid),markInicialClues(Grid,RowClues,ColumClues,GridSat)`;
         setWaiting(true);
