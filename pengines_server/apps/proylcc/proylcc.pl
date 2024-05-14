@@ -77,37 +77,38 @@ put(Content, [RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, RowSat, ColSat):
 %checkWinner(+Position, +Grid, +AllRowClues, +AllColumnClues, -isWinner).                              
 %base success case
 checkWinner(_Position,_Grid,[],[],1).
-%if there are more columns than rows
-checkWinner(Position,Grid,[],[ColumnClue|ColumnClues],IsWinner):-
+%checkWinner(0,[["_","_"],["_","_"],["_","_"]],[[],[],[]],[[],[]],W)
 
-	searchColumn(Position,Grid,NewColumn),
-	checkClues(ColumnClue, NewColumn,ColSat),
+checkWinner(Position,Grid,RowClues,ColumnClues,IsWinner):-
+
 	
 
-	ColSat == 1, NewPosition  = Position+1,
-	checkWinner(NewPosition, Grid, [], ColumnClues, IsWinner).
-%if there are more rows than columns
-checkWinner(Position,Grid,[RowClue|RowClues],[],IsWinner):-
+	obtainLineClue(ColumnClues,ColumnClue,RestColumnClues),
+	checkWinnerCondInCol(Position, Grid, ColumnClue, RestColumnClues, ColSat),
 	
-	searchIndex(Position,Grid,NewRow),
-	checkClues(RowClue, NewRow,RowSat),
+	obtainLineClue(RowClues,RowClue,RestRowClues),
+	checkWinnerCondInRow(Position, Grid, RowClue, RestRowClues,RowSat),
 
-	RowSat == 1, NewPosition  = Position+1,
-	checkWinner(NewPosition, Grid, RowClues, [], IsWinner).
-
-checkWinner(Position,Grid,[RowClue|RowClues],[ColumnClue|ColumnClues],IsWinner):-
-
-	searchColumn(Position,Grid,NewColumn),
-	checkClues(ColumnClue, NewColumn,ColSat),
-	
-	searchIndex(Position,Grid,NewRow),
-	checkClues(RowClue, NewRow,RowSat),
-
-	RowSat == 1, ColSat == 1, NewPosition  = Position+1,
-	checkWinner(NewPosition, Grid, RowClues, ColumnClues, IsWinner).
+	RowSat == 1, ColSat == 1, NewPosition  is Position+1,
+	checkWinner(NewPosition, Grid, RestRowClues, RestColumnClues, IsWinner).
 %base failure case
 checkWinner(_Position,_Grid,_RowClues,_ColumnClues,0).	
 
+%obtainLineClue(+AllColumnClues, -ColumnClue, ).
+obtainLineClue([],[],[]).
+obtainLineClue([ColumnClue|RestColumnClues],ColumnClue,RestColumnClues).
+
+%checkWinnerCondInCol(+Position, +Grid, +ColumnClue, +ColumnLength, -ColSat)
+checkWinnerCondInCol(_Position, _Grid, [], [], 1).
+checkWinnerCondInCol(Position, Grid, ColumnClue, _ColumnClues,ColSat):-
+	searchColumn(Position,Grid,NewColumn), 
+	checkClues(ColumnClue, NewColumn,ColSat).
+
+%checkWinnerCondInRow(+Position, +Grid, +RowClue, +RowLength, -RowSat)
+checkWinnerCondInRow(_Position, _Grid, [],[], 1).
+checkWinnerCondInRow(Position, Grid, RowClue,_RowClues, RowSat):-
+	searchIndex(Position,Grid,NewRow),
+	checkClues(RowClue, NewRow,RowSat).
 
 
 % Predicado para generar todas las permutaciones posibles de una grilla de X por Y con elementos "X" y "#"
