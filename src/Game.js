@@ -131,7 +131,7 @@ function Game() {
   const handleSolutionClick= () => {
     setSeeSolutionGrid(SeeSolutionGrid ? 0 : 1);
   };
-  
+  let g = 0;
 
   return (
   <CenteredContainer>
@@ -139,21 +139,14 @@ function Game() {
       <div>
         <div className="game">
           {/*solucion temporal, encontar algo mejor*/}
-          {SeeSolutionGrid === 0 &&(<Board
-            grid = {grid}
+          
+          <Board
+            grid = {g = SeeSolutionGrid === 1 ? winnerGrid : grid}
             rowsClues={rowsClues}
             colsClues={colsClues}
             onClick={(i, j) => handleClick(i, j)}
             highlightedClueCoords={highlightedClueCoords}
-          />)}
-
-          {SeeSolutionGrid === 1 && (<Board
-            grid = {winnerGrid}
-            rowsClues={rowsClues}
-            colsClues={colsClues}
-            onClick={(i, j) => handleClick(i, j)}
-            highlightedClueCoords={highlightedClueCoords}
-          />)}
+          />
 
         </div>
         <div className="container" >
