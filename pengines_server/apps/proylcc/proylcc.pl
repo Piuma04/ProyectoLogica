@@ -111,37 +111,78 @@ checkWinnerCondInRow(Position, Grid, RowClue,_RowClues, RowSat):-
 	checkClues(RowClue, NewRow,RowSat).
 
 
+
+
+
+
+
+
+
+
+
+
+%%
+%
+%Aca esta todo lo que completa el tablero
+%
+%%
 % Predicado para generar todas las permutaciones posibles de una grilla de X por Y con elementos "X" y "#"
-generate_grid_permutations(X, Y,RC, Grid) :-
-    length(Grid, Y),                   % La longitud de la grilla debe ser Y
-    generate_rows(X, Y,RC, Grid).         % Generar las filas de la grilla
+generate_grid_permutations(_CantRow, CantCol,RC, Grid) :-
+	% La longitud de la grilla debe ser Y
+generate_rows(CantCol, CantCol,RC, Grid).         % Generar las filas de la grilla
 
 % Generar las filas de la grilla
 generate_rows(_, 0,[], []).              % Caso base: Cuando se han generado todas las filas
-generate_rows(X, Y,[RC|RCs], [Row|RestRows]) :-
-    Y > 0,                            % Asegurarse de que Y sea mayor que 0
-    Y1 is Y - 1,                      % Decrementar Y en 1 para la siguiente fila
-    length(Row, X),                   % La longitud de cada fila debe ser X
-    generate_row(X, Row), 
-	checkClues(RC,Row,Sat),
-	Sat==1,            % Generar la fila
-   generate_rows(X, Y1,RCs, RestRows).   % Generar las filas restantes
+generate_rows(CantRow, CantCol,[RC|RCs], [Row|RestRows]) :-
+CantCol > 0,                            % Asegurarse de que Y sea mayor que 0
+NewCantCol is CantCol - 1,                      % Decrementar Y en 1 para la siguiente fila
+length(Row, CantRow),                   % La longitud de cada fila debe ser X
+fillClues(RC, CantRow,Row), 
 
-% Generar una fila con elementos "X" y "#"
-generate_row(0, []).                  % Caso base: Cuando se han generado todos los elementos de la fila
-generate_row(X, [Element|Rest]) :-
-    X > 0,                            % Asegurarse de que X sea mayor que 0
-    X1 is X - 1,                      % Decrementar X en 1 para el siguiente elemento
-    (Element = "X" ; Element = "#"), % El elemento puede ser 'X' o '#'
-    generate_row(X1, Rest).           % Generar los elementos restantes de la fila
-/**
-fijarse de poner bien para cuando hay varias pista en una sola fila
-generate_row(X,X,["#"|Rest]):-X>0, NewX is X-1,generate_row(NewX,NewX,Rest).
-generate_row(X,0,["X"|Rest]):-X>0, NewX is X-1,generate_row(NewX,0,Rest).
-*/
+  % Generar la fila
+generate_rows(CantRow, NewCantCol,RCs, RestRows).   % Generar las filas restantes
 
-generateTrueAnswer(X,Y,RC,CC,Grid):-generate_grid_permutations(X, Y,RC, Grid),checkWinner(0,Grid,[],CC,1).
 
+fillClues([],_X,_Y).
+fillClues([Clue|Clues],Length,PossibleLine):-
+sumElems([Clue|Clues],Sum),
+Blanks is Length-Sum,
+fillCluesAux([Clue|Clues],Blanks,PossibleLine).
+fillCluesAux([],0,[]).
+fillCluesAux([Clue|Clues],Blanks,God):-
+fillFollowing(Clue,"#",Linea),
+append(Linea,Bs,God),
+fillCluesAux(Clues,Blanks,Bs),
+( Bs =["X"|_];Bs =[]).
+fillCluesAux(Clues,Blanks,["X"|Bs]):-
+Blanks>0,
+NewBlanks is Blanks-1,
+fillCluesAux(Clues,NewBlanks,Bs).
+sumElems([],0).
+sumElems([Clue|Clues],ClueSum):-sumElems(Clues,PastSum),ClueSum is PastSum + Clue.
+fillFollowing(0,_Symbol,[]).
+fillFollowing(Cant,Symbol,[Symbol|Elems]):-Cant>=0,NewCant is Cant-1,fillFollowing(NewCant,Symbol,Elems).
+checkColumns(_Position,_Grid,[],[],1).
+checkColumns(Position,Grid,[],[ColumnClue|ColumnClues],IsWinner):-
+
+searchColumn(Position,Grid,NewColumn),
+checkClues(ColumnClue, NewColumn,ColSat),
+
+
+ColSat == 1, NewPosition  = Position+1,
+checkColumns(NewPosition, Grid, [], ColumnClues, IsWinner).
+
+checkColumns(_Position,_Grid,_RowClues,_ColumnClues,0).	
+generateTrueAnswer(CantRow,CantCol,RC,CC,Grid):-generate_grid_permutations(CantRow, CantCol,RC, Grid),checkColumns(0,Grid,[],CC,1).
+
+
+
+
+
+
+
+
+%aca se ponen los nuevos niveles
 
 level1(
     [[7], [2,2], [2,2], [2],[3],[4],[2],[],[2],[2]],% RowsClues
