@@ -252,3 +252,11 @@ input:not(:checked) + .slider .Xbrush {
       margin: 0;
       padding: 0;
 }
+
+.hintButton{
+  margin-left: 20px;
+}
+
+.seeSolutionButton{
+  
+}

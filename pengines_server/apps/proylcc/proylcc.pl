@@ -94,7 +94,7 @@ checkWinner(Position,Grid,RowClues,ColumnClues,IsWinner):-
 %base failure case
 checkWinner(_Position,_Grid,_RowClues,_ColumnClues,0).	
 
-%obtainLineClue(+AllColumnClues, -ColumnClue, ).
+%obtainLineClue(+AllColumnClues, -ColumnClue, -RestColumnClues).
 obtainLineClue([],[],[]).
 obtainLineClue([ColumnClue|RestColumnClues],ColumnClue,RestColumnClues).
 
@@ -141,6 +141,8 @@ generate_row(X,0,["X"|Rest]):-X>0, NewX is X-1,generate_row(NewX,0,Rest).
 */
 
 generateTrueAnswer(X,Y,RC,CC,Grid):-generate_grid_permutations(X, Y,RC, Grid),checkWinner(0,Grid,[],CC,1).
+
+
 level1(
     [[7], [2,2], [2,2], [2],[3],[4],[2],[],[2],[2]],% RowsClues
     
