@@ -75,10 +75,27 @@ put(Content, [RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, RowSat, ColSat):
 	searchIndex(RowN, RowsClues, RowsClueList),
 	checkClues(RowsClueList, NewRow,RowSat).
 
+%generateGridWithHint(+Pos, +RowsClues, +ColsClues, +Grid, +SolvedGrid, -NewGrid, -RowSat, -ColSat).
+
+generateGridWithHint([RowN, ColN], RowsClues, ColsClues, Grid, SolvedGrid, NewGrid, RowSat, ColSat):-
+
+	searchIndex(RowN, SolvedGrid, RowObj),
+	searchIndex(ColN, RowObj, Replacement),
+	
+	replace(Row, RowN, NewRow, Grid, NewGrid),	
+	replace(_Cell, ColN, Replacement, Row, NewRow),
+
+	searchColumn(ColN,NewGrid,NewColumn),
+	searchIndex(ColN, ColsClues, ColsClueList),
+	checkClues(ColsClueList, NewColumn,ColSat),
+	
+	%check if rows are correct
+	searchIndex(RowN, RowsClues, RowsClueList),
+	checkClues(RowsClueList, NewRow,RowSat).
+
 %checkWinner(+Position, +Grid, +AllRowClues, +AllColumnClues, -isWinner).                              
 %base success case
 checkWinner(_Position,_Grid,[],[],1).
-%checkWinner(0,[["_","_"],["_","_"],["_","_"]],[[],[],[]],[[],[]],W)
 
 checkWinner(Position,Grid,RowClues,ColumnClues,IsWinner):-
 
@@ -184,6 +201,7 @@ checkColumns(Position,Grid,[],[ColumnClue|ColumnClues],IsWinner):-
 checkColumns(_Position,_Grid,_RowClues,_ColumnClues,0).	
 
 generateTrueAnswer(CantRow,CantCol,RC,CC,Grid):-generate_grid_permutations(CantRow, CantCol,RC, Grid),checkColumns(0,Grid,[],CC,1).
+
 
 /*forall(
 	member(X, [[7], [2,2], [2,2], [2],[3],[4],[2],[0],[2],[2]]),

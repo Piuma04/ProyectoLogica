@@ -18,7 +18,7 @@ function Game() {
   const [GameSatisfaction, setGameSatisfaction] = useState(null);
   const [highlightedClueCoords,setHighLightedClueCoords] = useState(null);
   const [currentLevel,setCurrentLevel] = useState(0);
-  const maxLevel = 2;
+  const maxLevel = 3;
   //starts the server
   useEffect(() => {
     PengineClient.init(handleServerReady);
@@ -53,7 +53,7 @@ function Game() {
       if(winnerGrid == null){
         //momentaneo
         setWinnerGrid([
-          ["_","#","#","#","#","#","#","_"],
+          ["X","#","#","#","#","#","#","_"],
           ["#","#","_","_","_","_","#","#"],
           ["#","#","_","_","_","_","#","#"],
           ["_","_","_","_","_","_","#","#"],
@@ -85,13 +85,21 @@ function Game() {
     const colClues = JSON.stringify(colsClues);
     const rowClues = JSON.stringify(rowsClues);
     const content = isCrossing?'X':'#';
-
-    const queryS = `put("${content}", [${i},${j}], ${rowClues}, ${colClues},${squaresS}, ResGrid, RowSat, ColSat)`; 
+    let queryS;
+    if(!seeHint){
+     queryS = `put("${content}", [${i},${j}], ${rowClues}, ${colClues},${squaresS}, ResGrid, RowSat, ColSat)`; 
+    }
+    else{
+      const winGrid = JSON.stringify(winnerGrid).replaceAll('""', ''); 
     
+       queryS = `generateGridWithHint([${i},${j}], ${rowClues}, ${colClues}, ${squaresS}, ${winGrid}, ResGrid, RowSat, ColSat)`;
+       
+    }
       setWaiting(true);
       pengine.query(queryS, (success, response) => {
       
         if (success) {
+          console.log(response['ResGrid']);
           setGrid(response['ResGrid']);
           highlightedClueCoords[0][i] = response['RowSat'];
           highlightedClueCoords[1][j] = response['ColSat'];
@@ -132,10 +140,46 @@ function Game() {
     setSeeSolutionGrid(seeSolutionGrid ? 0 : 1);
   };
   let g = 0;
+  const goToLevel = (i) => {
+    if(!waiting)
+    {
+          setCurrentLevel(i);
+      if(i===0)
+        {
+          const queryT = `init(RowClues, ColumClues, Grid),markInicialClues(Grid,RowClues,ColumClues,GridSat)`;
+          setWaiting(true);
+          pengine.query(queryT, (success, response) => { 
+          if (success) {
+            setGrid(response['Grid']);
+            setRowsClues(response['RowClues']);
+            setColsClues(response['ColumClues']);
+            setHighLightedClueCoords(response['GridSat']);
+          }
+          setWaiting(false);
+        });
+        }
+      else
+      {
+        const queryS = `level${i}(RowClues, ColumClues, Grid),markInicialClues(Grid,RowClues,ColumClues,GridSat)`;
+        setWaiting(true);
+        pengine.query(queryS, (success, response) => { 
+          if (success) {
+            setGrid(response['Grid']);
+            setRowsClues(response['RowClues']);
+            setColsClues(response['ColumClues']);
+            setHighLightedClueCoords(response['GridSat']);
+          }
+          setWaiting(false);
+        });
+      }
+    }
+    };
+    const beatedGameText = currentLevel === maxLevel ? "You beated the game. Press OK to reload it." : "You WON! Press OK to load the next level.";
+
 
   return (
   <CenteredContainer>
-      
+      <p className='levelLabel'>Level {currentLevel}</p>
       <div>
         <div className="game">
           {/*solucion temporal, encontar algo mejor*/}
@@ -147,6 +191,13 @@ function Game() {
             onClick={(i, j) => handleClick(i, j)}
             highlightedClueCoords={highlightedClueCoords}
           />
+          <div className="levelsGrid">
+        {Array.from({ length: maxLevel+1 }, (_, index) => (
+          <div key={index} className="levelLabel">
+            <button onClick={() => goToLevel(index)}>Level {index}</button>
+          </div>
+        ))}
+      </div>
 
         </div>
         <div className="container" >
@@ -156,8 +207,8 @@ function Game() {
               changeBrush={() => setIsCrossing(!isCrossing)}
             />
           </div>
-          <div class="fx-block">
-	          <div class="toggle">
+          <div className="fx-block">
+	          <div className="toggle">
 		          <div>
 			          < input type="checkbox"
                   id="toggles"
@@ -172,7 +223,7 @@ function Game() {
             {GameSatisfaction === 0 && (<div className = "KP">Keep Playing!</div>)}
             {GameSatisfaction === 1 && (
               <div className="alert" >
-                <p>¡You Won!</p>
+                <p>{beatedGameText}</p>
                 <button className="okButton" onClick={handleOkClick}>OK</button>
               </div>
             )}

@@ -225,7 +225,6 @@ input:not(:checked) + .slider .Xbrush {
 }
 
 .game-info {
-  margin-left: 20px;
   justify-content: center;
   align-items: center;
 }
@@ -264,7 +263,10 @@ input:not(:checked) + .slider .Xbrush {
       align-items: center;
 }
 
-
+.levelsGrid
+{
+  margin-left: 30px;
+}
 
 
 .toggle > div {
