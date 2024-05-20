@@ -4,6 +4,7 @@
 	]).
 
 :-use_module(library(lists)).
+:-use_module(library(clpfd)).
 
 replace(X, 0, Y, [X|Xs], [Y|Xs]).
 
@@ -134,48 +135,61 @@ generate_rows(CantCol, CantCol,RC, Grid).         % Generar las filas de la gril
 % Generar las filas de la grilla
 generate_rows(_, 0,[], []).              % Caso base: Cuando se han generado todas las filas
 generate_rows(CantRow, CantCol,[RC|RCs], [Row|RestRows]) :-
-CantCol > 0,                            % Asegurarse de que Y sea mayor que 0
-NewCantCol is CantCol - 1,                      % Decrementar Y en 1 para la siguiente fila
-length(Row, CantRow),                   % La longitud de cada fila debe ser X
-fillClues(RC, CantRow,Row), 
+	CantCol > 0,                            % Asegurarse de que Y sea mayor que 0
+	NewCantCol is CantCol - 1,                      % Decrementar Y en 1 para la siguiente fila
+	length(Row, CantRow),                   % La longitud de cada fila debe ser X
+	fillClues(RC, CantRow,Row), % Generar la fila
+	generate_rows(CantRow, NewCantCol,RCs, RestRows).   % Generar las filas restantes
 
-  % Generar la fila
-generate_rows(CantRow, NewCantCol,RCs, RestRows).   % Generar las filas restantes
-
-
-fillClues([],_X,_Y).
+fillClues([],Length,PossibleLine):-fillFollowing(Length,"X",PossibleLine).
 fillClues([Clue|Clues],Length,PossibleLine):-
-sumElems([Clue|Clues],Sum),
-Blanks is Length-Sum,
-fillCluesAux([Clue|Clues],Blanks,PossibleLine).
+	sumElems([Clue|Clues],Sum),
+	Blanks is Length-Sum,
+	fillCluesAux([Clue|Clues],Blanks,PossibleLine).
+
 fillCluesAux([],0,[]).
 fillCluesAux([Clue|Clues],Blanks,God):-
-fillFollowing(Clue,"#",Linea),
-append(Linea,Bs,God),
-fillCluesAux(Clues,Blanks,Bs),
-( Bs =["X"|_];Bs =[]).
+	fillFollowing(Clue,"#",Linea),
+	append(Linea,Bs,God),
+	fillCluesAux(Clues,Blanks,Bs),
+	( Bs =["X"|_];Bs =[]).
 fillCluesAux(Clues,Blanks,["X"|Bs]):-
-Blanks>0,
-NewBlanks is Blanks-1,
-fillCluesAux(Clues,NewBlanks,Bs).
+	Blanks>0,
+	NewBlanks is Blanks-1,
+	fillCluesAux(Clues,NewBlanks,Bs).
+
 sumElems([],0).
-sumElems([Clue|Clues],ClueSum):-sumElems(Clues,PastSum),ClueSum is PastSum + Clue.
+sumElems([Clue|Clues],ClueSum):-
+	sumElems(Clues,PastSum),ClueSum is PastSum + Clue.
+
 fillFollowing(0,_Symbol,[]).
 fillFollowing(Cant,Symbol,[Symbol|Elems]):-Cant>=0,NewCant is Cant-1,fillFollowing(NewCant,Symbol,Elems).
+
+findCoincidences(Clues,Length,Coincidences):-
+	findall(PossibleLine, fillClues(Clues, Length, PossibleLine), AllPossibleLines),
+	transpose(AllPossibleLines,T),
+	findCoincidencesAux(T,Coincidences).
+
+findCoincidencesAux([],[]).
+findCoincidencesAux([T|Ts],[I|Is]):-
+	((forall(member(X,T),X=="#"), I="#");I="X"),
+	findCoincidencesAux(Ts,Is).
+
 checkColumns(_Position,_Grid,[],[],1).
 checkColumns(Position,Grid,[],[ColumnClue|ColumnClues],IsWinner):-
-
-searchColumn(Position,Grid,NewColumn),
-checkClues(ColumnClue, NewColumn,ColSat),
-
-
-ColSat == 1, NewPosition  = Position+1,
-checkColumns(NewPosition, Grid, [], ColumnClues, IsWinner).
-
+	searchColumn(Position,Grid,NewColumn),
+	checkClues(ColumnClue, NewColumn,ColSat),
+	ColSat == 1, NewPosition  = Position+1,
+	checkColumns(NewPosition, Grid, [], ColumnClues, IsWinner).
 checkColumns(_Position,_Grid,_RowClues,_ColumnClues,0).	
+
 generateTrueAnswer(CantRow,CantCol,RC,CC,Grid):-generate_grid_permutations(CantRow, CantCol,RC, Grid),checkColumns(0,Grid,[],CC,1).
 
-
+/*forall(
+	member(X, [[7], [2,2], [2,2], [2],[3],[4],[2],[0],[2],[2]]),
+	( findCoincidences(X, 8, I),
+	  writeln(I) )
+).*/
 
 
 
