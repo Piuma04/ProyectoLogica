@@ -13,8 +13,8 @@ function Game() {
   const [waiting, setWaiting] = useState(false);
   const [isCrossing, setIsCrossing] = useState(false);
   //este de aca abajo te dice si esta en hint o no, configurar, podria optimizarse
-  const [modeSelected, setModeSelected] = useState(false);
-  const [SeeSolutionGrid,setSeeSolutionGrid] = useState(0);
+  const [seeHint, setSeeHint] = useState(false);
+  const [seeSolutionGrid,setSeeSolutionGrid] = useState(0);
   const [GameSatisfaction, setGameSatisfaction] = useState(null);
   const [highlightedClueCoords,setHighLightedClueCoords] = useState(null);
   const [currentLevel,setCurrentLevel] = useState(0);
@@ -37,7 +37,7 @@ function Game() {
   } 
   //tell you if you won
   useEffect(() => {
-    if(grid != null && SeeSolutionGrid === 0){
+    if(grid != null && seeSolutionGrid === 0){
       const squaresS2 = JSON.stringify(grid).replaceAll('""', '');
       const colClues = JSON.stringify(colsClues);
       const rowClues = JSON.stringify(rowsClues);
@@ -80,7 +80,7 @@ function Game() {
   }, [grid,rowsClues,colsClues]);
   //handles the click
   function handleClick(i, j) {
-    if (!waiting && SeeSolutionGrid === 0) {
+    if (!waiting && seeSolutionGrid === 0) {
     const squaresS = JSON.stringify(grid).replaceAll('""', ''); 
     const colClues = JSON.stringify(colsClues);
     const rowClues = JSON.stringify(rowsClues);
@@ -125,11 +125,11 @@ function Game() {
   };
 
   const handleHintClick= () => {
-
+    setSeeHint(!seeHint);
 
   };
   const handleSolutionClick= () => {
-    setSeeSolutionGrid(SeeSolutionGrid ? 0 : 1);
+    setSeeSolutionGrid(seeSolutionGrid ? 0 : 1);
   };
   let g = 0;
 
@@ -141,7 +141,7 @@ function Game() {
           {/*solucion temporal, encontar algo mejor*/}
           
           <Board
-            grid = {g = SeeSolutionGrid === 1 ? winnerGrid : grid}
+            grid = {g = seeSolutionGrid === 1 ? winnerGrid : grid}
             rowsClues={rowsClues}
             colsClues={colsClues}
             onClick={(i, j) => handleClick(i, j)}
@@ -156,7 +156,18 @@ function Game() {
               changeBrush={() => setIsCrossing(!isCrossing)}
             />
           </div>
-          <button className="hintButton" onClick={handleHintClick}>?</button>
+          <div class="fx-block">
+	          <div class="toggle">
+		          <div>
+			          < input type="checkbox"
+                  id="toggles"
+                  onChange={handleHintClick}
+                  />
+			          <div data-unchecked="Hint" data-checked="No Hint">
+			        </div>
+		        </div>
+	        </div>
+        </div>
           <div className="game-info">
             {GameSatisfaction === 0 && (<div className = "KP">Keep Playing!</div>)}
             {GameSatisfaction === 1 && (
@@ -168,8 +179,8 @@ function Game() {
           </div>
         
         </div>
-        {SeeSolutionGrid === 0 && (<button className="seeSolutionButton" onClick={handleSolutionClick}>SEE SOLUTION</button>)}
-        {SeeSolutionGrid === 1 && (<button className="seeSolutionButton" onClick={handleSolutionClick}>SEE NORMAL GRID</button>)}
+        {seeSolutionGrid === 0 && (<button className="seeSolutionButton" onClick={handleSolutionClick}>SEE SOLUTION</button>)}
+        {seeSolutionGrid === 1 && (<button className="seeSolutionButton" onClick={handleSolutionClick}>SEE NORMAL GRID</button>)}
       </div>
     </CenteredContainer>);
 }
