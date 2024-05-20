@@ -25,10 +25,11 @@ function Game() {
   }, []);
   function handleServerReady(instance) {
     pengine = instance;
-    const queryS = 'init(RowClues, ColumClues, Grid),markInicialClues(Grid,RowClues,ColumClues,GridSat)'
+    const queryS = 'init(RowClues, ColumClues, Grid),markInicialClues(Grid,RowClues,ColumClues,GridSat),solve(Grid,RowClues,ColumClues,SolvedGrid)'
     pengine.query(queryS, (success, response) => {
       if (success) {
         setGrid(response['Grid']);
+        setWinnerGrid(response['SolvedGrid']);
         setRowsClues(response['RowClues']);
         setColsClues(response['ColumClues']);
         setHighLightedClueCoords(response['GridSat']);
@@ -50,31 +51,13 @@ function Game() {
         }
         
       });
+      /*
       if(winnerGrid == null){
-        //momentaneo
-        setWinnerGrid([
-          ["X","#","#","#","#","#","#","_"],
-          ["#","#","_","_","_","_","#","#"],
-          ["#","#","_","_","_","_","#","#"],
-          ["_","_","_","_","_","_","#","#"],
-          ["_","_","_","_","_","#","#","#"],
-          ["_","_","_","#","#","#","#","_"],
-          ["_","_","_","#","#","_","_","_"],
-          ["_","_","_","_","_","_","_","_"],
-          ["_","_","_","#","#","_","_","_"],
-          ["_","_","_","#","#","_","_","_"]
-
-          ]);
-       /* const rowLength = length(rowClues);
-        const colLength = length(colClues);
-        const queryU = `generateTrueAnswer(${rowLength},${colLength},${rowClues},${colClues},WinGrid)`
+        const queryU = `solve(${Grid},${rowClues},${colClues},WinGrid)`
         pengine.query(queryU, (success2, response2) => {
           if (success2) { setWinnerGrid(response2['WinGrid']); }
-        });*/
-        /*
-        cuando ande el generateTrueAnswer descomentar esto
-        */
-      }
+        });
+      }*/
     }
     
   }, [grid,rowsClues,colsClues]);
@@ -116,11 +99,12 @@ function Game() {
     setCurrentLevel(currentLevel+1);
     if(waiting && currentLevel+1<=maxLevel)
     {
-      const queryS = `level${currentLevel+1}(RowClues, ColumClues, Grid),markInicialClues(Grid,RowClues,ColumClues,GridSat)`;
+      const queryS = `level${currentLevel+1}(RowClues, ColumClues, Grid),markInicialClues(Grid,RowClues,ColumClues,GridSat),solve(Grid,RowClues,ColumClues,SolvedGrid)`;
       setWaiting(true);
       pengine.query(queryS, (success, response) => { 
         if (success) {
           setGrid(response['Grid']);
+          setWinnerGrid(response['SolvedGrid'])
           setRowsClues(response['RowClues']);
           setColsClues(response['ColumClues']);
           setHighLightedClueCoords(response['GridSat']);
@@ -146,11 +130,12 @@ function Game() {
           setCurrentLevel(i);
       if(i===0)
         {
-          const queryT = `init(RowClues, ColumClues, Grid),markInicialClues(Grid,RowClues,ColumClues,GridSat)`;
+          const queryT = `init(RowClues, ColumClues, Grid),markInicialClues(Grid,RowClues,ColumClues,GridSat),solve(Grid,RowClues,ColumClues,SolvedGrid)`;
           setWaiting(true);
           pengine.query(queryT, (success, response) => { 
           if (success) {
             setGrid(response['Grid']);
+            setWinnerGrid(response['SolvedGrid'])
             setRowsClues(response['RowClues']);
             setColsClues(response['ColumClues']);
             setHighLightedClueCoords(response['GridSat']);
@@ -160,11 +145,12 @@ function Game() {
         }
       else
       {
-        const queryS = `level${i}(RowClues, ColumClues, Grid),markInicialClues(Grid,RowClues,ColumClues,GridSat)`;
+        const queryS = `level${i}(RowClues, ColumClues, Grid),markInicialClues(Grid,RowClues,ColumClues,GridSat),solve(Grid,RowClues,ColumClues,SolvedGrid)`;
         setWaiting(true);
         pengine.query(queryS, (success, response) => { 
           if (success) {
             setGrid(response['Grid']);
+            setWinnerGrid(response['SolvedGrid']);
             setRowsClues(response['RowClues']);
             setColsClues(response['ColumClues']);
             setHighLightedClueCoords(response['GridSat']);

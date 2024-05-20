@@ -158,56 +158,80 @@ generate_rows(CantRow, CantCol,[RC|RCs], [Row|RestRows]) :-
 	fillClues(RC, CantRow,Row), % Generar la fila
 	generate_rows(CantRow, NewCantCol,RCs, RestRows).   % Generar las filas restantes
 
-fillClues([],Length,PossibleLine):-fillFollowing(Length,"X",PossibleLine).
-fillClues([Clue|Clues],Length,PossibleLine):-
-	sumElems([Clue|Clues],Sum),
-	Blanks is Length-Sum,
-	fillCluesAux([Clue|Clues],Blanks,PossibleLine).
-
-fillCluesAux([],0,[]).
-fillCluesAux([Clue|Clues],Blanks,God):-
-	fillFollowing(Clue,"#",Linea),
-	append(Linea,Bs,God),
-	fillCluesAux(Clues,Blanks,Bs),
-	( Bs =["X"|_];Bs =[]).
-fillCluesAux(Clues,Blanks,["X"|Bs]):-
-	Blanks>0,
-	NewBlanks is Blanks-1,
-	fillCluesAux(Clues,NewBlanks,Bs).
-
-sumElems([],0).
-sumElems([Clue|Clues],ClueSum):-
-	sumElems(Clues,PastSum),ClueSum is PastSum + Clue.
-
-fillFollowing(0,_Symbol,[]).
-fillFollowing(Cant,Symbol,[Symbol|Elems]):-Cant>=0,NewCant is Cant-1,fillFollowing(NewCant,Symbol,Elems).
-
-findCoincidences(Clues,Length,Coincidences):-
-	findall(PossibleLine, fillClues(Clues, Length, PossibleLine), AllPossibleLines),
-	transpose(AllPossibleLines,T),
-	findCoincidencesAux(T,Coincidences).
-
-findCoincidencesAux([],[]).
-findCoincidencesAux([T|Ts],[I|Is]):-
-	((forall(member(X,T),X=="#"), I="#");I="X"),
-	findCoincidencesAux(Ts,Is).
-
-checkColumns(_Position,_Grid,[],[],1).
-checkColumns(Position,Grid,[],[ColumnClue|ColumnClues],IsWinner):-
-	searchColumn(Position,Grid,NewColumn),
-	checkClues(ColumnClue, NewColumn,ColSat),
-	ColSat == 1, NewPosition  = Position+1,
-	checkColumns(NewPosition, Grid, [], ColumnClues, IsWinner).
-checkColumns(_Position,_Grid,_RowClues,_ColumnClues,0).	
-
-generateTrueAnswer(CantRow,CantCol,RC,CC,Grid):-generate_grid_permutations(CantRow, CantCol,RC, Grid),checkColumns(0,Grid,[],CC,1).
-
-
-/*forall(
-	member(X, [[7], [2,2], [2,2], [2],[3],[4],[2],[0],[2],[2]]),
-	( findCoincidences(X, 8, I),
-	  writeln(I) )
-).*/
+	fillClues([],PartialLine,PossibleLine):-
+		fillClues([0],PartialLine,PossibleLine).
+	fillClues([Clue|Clues],PartialLine,PossibleLine):-
+		sumElems([Clue|Clues],Sum),
+		length(PartialLine, Length),
+		Blanks is Length-Sum,
+		fillCluesAux([Clue|Clues],Blanks,PossibleLine),
+		PossibleLine = PartialLine.
+	
+	fillCluesAux([],0,[]).
+	fillCluesAux([Clue|Clues],Blanks,God):-
+		fillFollowing(Clue,"#",Linea),
+		append(Linea,Bs,God),
+		fillCluesAux(Clues,Blanks,Bs),
+		( Bs =["X"|_];Bs =[]).
+	fillCluesAux(Clues,Blanks,["X"|Bs]):-
+		Blanks>0,
+		NewBlanks is Blanks-1,
+		fillCluesAux(Clues,NewBlanks,Bs).
+	
+	sumElems([],0).
+	sumElems([Clue|Clues],ClueSum):-
+		sumElems(Clues,PastSum),ClueSum is PastSum + Clue.
+	
+	fillFollowing(0,_Symbol,[]).
+	fillFollowing(Cant,Symbol,[Symbol|Elems]):-Cant>=0,NewCant is Cant-1,fillFollowing(NewCant,Symbol,Elems).
+	
+	findCoincidences(Clues,PartialLine,Coincidences):-
+		findall(PossibleLine, fillClues(Clues, PartialLine, PossibleLine), AllPossibleLines),
+		transpose(AllPossibleLines,T),
+		findCoincidencesAux(T,Coincidences).
+	
+	findCoincidencesAux([],[]).
+	findCoincidencesAux([T|Ts],[I|Is]):-
+		(forall(member(X,T),X=="#"), I="#"),!,
+		findCoincidencesAux(Ts,Is).
+	findCoincidencesAux([T|Ts],[I|Is]):-
+		(forall(member(X,T),X=="X"), I="X"),!,
+		findCoincidencesAux(Ts,Is).
+	findCoincidencesAux([_T|Ts],[I|Is]):-
+		I=_,
+		findCoincidencesAux(Ts,Is).
+	
+	fillColumns(ColumnClues,Grid,FilledC):-
+		transpose(Grid, GT),
+		fillColumnsAux(ColumnClues,GT,FilledCT),
+		transpose(FilledCT,FilledC).
+	
+	fillColumnsAux([],[],[]).
+	fillColumnsAux([CC|CCs],[Col|Cols],[FilledC|FilledCs]):-
+		findCoincidences(CC,Col,FilledC),
+		fillColumnsAux(CCs,Cols,FilledCs).
+	
+	fillRows([],[],[]).
+	fillRows([RC|RCs],[Row|Rows],[FilledR|FilledRs]):-
+		fillClues(RC,Row,FilledR),
+		fillRows(RCs,Rows,FilledRs).
+	
+	solve(Grid,RowClues,ColumnClues,SolvedGrid):-
+		fillColumns(ColumnClues,Grid,PartialRows),
+		fillColumnsAux(RowClues,PartialRows,PartialGrid),
+		Grid \==PartialRows,!,
+		solve(PartialGrid,RowClues,ColumnClues,SolvedGrid).
+	solve(Grid,RowClues,ColumnClues,PosGrid):-generateTrueAnswer(Grid,RowClues,ColumnClues,PosGrid).
+	
+	checkColumns(_Position,_Grid,[],[],1).
+	checkColumns(Position,Grid,[],[ColumnClue|ColumnClues],IsWinner):-
+		searchColumn(Position,Grid,NewColumn),
+		checkClues(ColumnClue, NewColumn,ColSat),
+		ColSat == 1, NewPosition  = Position+1,
+		checkColumns(NewPosition, Grid, [], ColumnClues, IsWinner).
+	checkColumns(_Position,_Grid,_RowClues,_ColumnClues,0).	
+	
+	generateTrueAnswer(Grid,RC,CC,PosGrid):-fillRows(RC,Grid,PosGrid),checkColumns(0,PosGrid,[],CC,1).
 
 
 
