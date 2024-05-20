@@ -7,21 +7,25 @@ let pengine;
 
 function Game() {
   const [grid, setGrid] = useState(null);
+  const [winnerGrid, setWinnerGrid] = useState(null);
   const [rowsClues, setRowsClues] = useState(null);
   const [colsClues, setColsClues] = useState(null);
   const [waiting, setWaiting] = useState(false);
   const [isCrossing, setIsCrossing] = useState(false);
+  //este de aca abajo te dice si esta en hint o no, configurar, podria optimizarse
+  const [seeHint, setSeeHint] = useState(false);
+  const [seeSolutionGrid,setSeeSolutionGrid] = useState(0);
   const [GameSatisfaction, setGameSatisfaction] = useState(null);
   const [highlightedClueCoords,setHighLightedClueCoords] = useState(null);
-  const [nextLevel,setNextLevel] = useState(1);
-  const maxLevel = 3;
+  const [currentLevel,setCurrentLevel] = useState(0);
+  const maxLevel = 2;
   //starts the server
   useEffect(() => {
     PengineClient.init(handleServerReady);
   }, []);
   function handleServerReady(instance) {
     pengine = instance;
-    const queryS = 'init(RowClues, ColumClues, Grid),markInicialClues(Grid,RowClues,ColumClues,GridSat)';
+    const queryS = 'init(RowClues, ColumClues, Grid),markInicialClues(Grid,RowClues,ColumClues,GridSat)'
     pengine.query(queryS, (success, response) => {
       if (success) {
         setGrid(response['Grid']);
@@ -31,13 +35,13 @@ function Game() {
       }
     });
   } 
-  //tells you if you won
+  //tell you if you won
   useEffect(() => {
-    if(grid != null){
-      const squaresS2 = JSON.stringify(grid).replaceAll('"_"', '_');
+    if(grid != null && seeSolutionGrid === 0){
+      const squaresS2 = JSON.stringify(grid).replaceAll('""', '');
       const colClues = JSON.stringify(colsClues);
       const rowClues = JSON.stringify(rowsClues);
-      const queryT = `checkWinner(${0}, ${squaresS2}, ${rowClues}, ${colClues}, IsWinner)`;
+      const queryT = `checkWinner(${0}, ${squaresS2}, ${rowClues}, ${colClues}, IsWinner)`
       pengine.query(queryT, (success2, response2) => {
         if (success2) {
           setGameSatisfaction(response2['IsWinner']);
@@ -46,14 +50,38 @@ function Game() {
         }
         
       });
+      if(winnerGrid == null){
+        //momentaneo
+        setWinnerGrid([
+          ["_","#","#","#","#","#","#","_"],
+          ["#","#","_","_","_","_","#","#"],
+          ["#","#","_","_","_","_","#","#"],
+          ["_","_","_","_","_","_","#","#"],
+          ["_","_","_","_","_","#","#","#"],
+          ["_","_","_","#","#","#","#","_"],
+          ["_","_","_","#","#","_","_","_"],
+          ["_","_","_","_","_","_","_","_"],
+          ["_","_","_","#","#","_","_","_"],
+          ["_","_","_","#","#","_","_","_"]
+
+          ]);
+       /* const rowLength = length(rowClues);
+        const colLength = length(colClues);
+        const queryU = `generateTrueAnswer(${rowLength},${colLength},${rowClues},${colClues},WinGrid)`
+        pengine.query(queryU, (success2, response2) => {
+          if (success2) { setWinnerGrid(response2['WinGrid']); }
+        });*/
+        /*
+        cuando ande el generateTrueAnswer descomentar esto
+        */
+      }
     }
+    
   }, [grid,rowsClues,colsClues]);
   //handles the click
   function handleClick(i, j) {
-    if (!waiting) {
-      
-    
-    const squaresS = JSON.stringify(grid).replaceAll('"_"', '_'); 
+    if (!waiting && seeSolutionGrid === 0) {
+    const squaresS = JSON.stringify(grid).replaceAll('""', ''); 
     const colClues = JSON.stringify(colsClues);
     const rowClues = JSON.stringify(rowsClues);
     const content = isCrossing?'X':'#';
@@ -77,10 +105,10 @@ function Game() {
   }
 
   const handleOkClick = () => {
-    setNextLevel(nextLevel+1);
-    if(waiting && nextLevel<=maxLevel)
+    setCurrentLevel(currentLevel+1);
+    if(waiting && currentLevel+1<=maxLevel)
     {
-      const queryS = `level${nextLevel}(RowClues, ColumClues, Grid),markInicialClues(Grid,RowClues,ColumClues,GridSat)`;
+      const queryS = `level${currentLevel+1}(RowClues, ColumClues, Grid),markInicialClues(Grid,RowClues,ColumClues,GridSat)`;
       setWaiting(true);
       pengine.query(queryS, (success, response) => { 
         if (success) {
@@ -96,79 +124,63 @@ function Game() {
        window.location.reload();
   };
 
-  const goToLevel = (i) => {
-  if(!waiting)
-  {
-        setNextLevel(i+1);
-    if(i===0)
-      {
-        const queryT = `init(RowClues, ColumClues, Grid),markInicialClues(Grid,RowClues,ColumClues,GridSat)`;
-        setWaiting(true);
-        pengine.query(queryT, (success, response) => { 
-        if (success) {
-          setGrid(response['Grid']);
-          setRowsClues(response['RowClues']);
-          setColsClues(response['ColumClues']);
-          setHighLightedClueCoords(response['GridSat']);
-        }
-        setWaiting(false);
-      });
-      }
-    else
-    {
-      const queryS = `level${i}(RowClues, ColumClues, Grid),markInicialClues(Grid,RowClues,ColumClues,GridSat)`;
-      setWaiting(true);
-      pengine.query(queryS, (success, response) => { 
-        if (success) {
-          setGrid(response['Grid']);
-          setRowsClues(response['RowClues']);
-          setColsClues(response['ColumClues']);
-          setHighLightedClueCoords(response['GridSat']);
-        }
-        setWaiting(false);
-      });
-    }
-  }
+  const handleHintClick= () => {
+    setSeeHint(!seeHint);
+
   };
-  const beatedGameText = nextLevel-1 === maxLevel ? "You beated the game. Press OK to reload it." : "You WON! Press OK to load the next level.";
+  const handleSolutionClick= () => {
+    setSeeSolutionGrid(seeSolutionGrid ? 0 : 1);
+  };
+  let g = 0;
+
   return (
   <CenteredContainer>
-   
-       <p className='levelLabel'>Level {nextLevel-1}</p>
-       <div><div className="game">
-        <Board
-          grid={grid}
-          rowsClues={rowsClues}
-          colsClues={colsClues}
-          onClick={(i, j) => handleClick(i, j)}
-          highlightedClueCoords={highlightedClueCoords}
-        />
-         <div className="levelsGrid">
-        {Array.from({ length: maxLevel+1 }, (_, index) => (
-          <div key={index} className="levelLabel">
-            <button onClick={() => goToLevel(index)}>Level {index}</button>
-          </div>
-        ))}
-      </div> 
-      </div>
-      <div className="container" >
-        <div className="game-info">
+      
+      <div>
+        <div className="game">
+          {/*solucion temporal, encontar algo mejor*/}
+          
+          <Board
+            grid = {g = seeSolutionGrid === 1 ? winnerGrid : grid}
+            rowsClues={rowsClues}
+            colsClues={colsClues}
+            onClick={(i, j) => handleClick(i, j)}
+            highlightedClueCoords={highlightedClueCoords}
+          />
+
+        </div>
+        <div className="container" >
+          <div className="game-info">
             <ModeSelector
               value={isCrossing?"X":"#"}
               changeBrush={() => setIsCrossing(!isCrossing)}
-          />
+            />
           </div>
-        <div className="game-info">
+          <div class="fx-block">
+	          <div class="toggle">
+		          <div>
+			          < input type="checkbox"
+                  id="toggles"
+                  onChange={handleHintClick}
+                  />
+			          <div data-unchecked="Hint" data-checked="No Hint">
+			        </div>
+		        </div>
+	        </div>
+        </div>
+          <div className="game-info">
             {GameSatisfaction === 0 && (<div className = "KP">Keep Playing!</div>)}
-            {GameSatisfaction === 1  && (
+            {GameSatisfaction === 1 && (
               <div className="alert" >
-                 <p>{beatedGameText}</p>
+                <p>¡You Won!</p>
                 <button className="okButton" onClick={handleOkClick}>OK</button>
               </div>
             )}
-            
+          </div>
+        
         </div>
-      </div>
+        {seeSolutionGrid === 0 && (<button className="seeSolutionButton" onClick={handleSolutionClick}>SEE SOLUTION</button>)}
+        {seeSolutionGrid === 1 && (<button className="seeSolutionButton" onClick={handleSolutionClick}>SEE NORMAL GRID</button>)}
       </div>
     </CenteredContainer>);
 }
