@@ -248,7 +248,7 @@ input:not(:checked) + .slider .Xbrush {
       width: auto;
       min-width: 100vw;
       max-width: max-content;
-      background-image: url("./toad.png");
+      background-image: url("./monos.png");
       /*backgroundColor: 'yellow';*/
       background-repeat: no-repeat;
       background-size: cover;
