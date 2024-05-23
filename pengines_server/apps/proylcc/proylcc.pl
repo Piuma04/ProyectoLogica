@@ -98,9 +98,6 @@ generateGridWithHint([RowN, ColN], RowsClues, ColsClues, Grid, SolvedGrid, NewGr
 checkWinner(_Position,_Grid,[],[],1).
 
 checkWinner(Position,Grid,RowClues,ColumnClues,IsWinner):-
-
-	
-
 	obtainLineClue(ColumnClues,ColumnClue,RestColumnClues),
 	checkWinnerCondInCol(Position, Grid, ColumnClue, RestColumnClues, ColSat),
 	
@@ -128,112 +125,106 @@ checkWinnerCondInRow(Position, Grid, RowClue,_RowClues, RowSat):-
 	searchIndex(Position,Grid,NewRow),
 	checkClues(RowClue, NewRow,RowSat).
 
+%Completar tablero metodos
 
+fillClues([],PartialLine,PossibleLine):-
+	fillClues([0],PartialLine,PossibleLine).
+fillClues([Clue|Clues],PartialLine,PossibleLine):-
+	sumElems([Clue|Clues],Sum),
+	length(PartialLine, Length),
+	Blanks is Length-Sum,
+	fillCluesAux([Clue|Clues],Blanks,PossibleLine),
+	PossibleLine = PartialLine.
 
+fillCluesAux([],0,[]).
+fillCluesAux([Clue|Clues],Blanks,God):-
+	fillFollowing(Clue,"#",Linea),
+	append(Linea,Bs,God),
+	fillCluesAux(Clues,Blanks,Bs),
+	( Bs =["X"|_];Bs =[]).
+fillCluesAux(Clues,Blanks,["X"|Bs]):-
+	Blanks>0,
+	NewBlanks is Blanks-1,
+	fillCluesAux(Clues,NewBlanks,Bs).
 
+sumElems([],0).
+sumElems([Clue|Clues],ClueSum):-
+	sumElems(Clues,PastSum),ClueSum is PastSum + Clue.
 
+fillFollowing(0,_Symbol,[]).
+fillFollowing(Cant,Symbol,[Symbol|Elems]):-Cant>=0,NewCant is Cant-1,fillFollowing(NewCant,Symbol,Elems).
 
+findCoincidences(Clues,PartialLine,Coincidences):-
+	findall(PossibleLine, fillClues(Clues, PartialLine, PossibleLine), AllPossibleLines),
+	transpose(AllPossibleLines,T),
+	findCoincidencesAux(T,Coincidences).
 
+findCoincidencesAux([],[]).
+findCoincidencesAux([T|Ts],[I|Is]):-
+	(forall(member(X,T),X=="#"), I="#"),!,
+	findCoincidencesAux(Ts,Is).
+findCoincidencesAux([T|Ts],[I|Is]):-
+	(forall(member(X,T),X=="X"), I="X"),!,
+	findCoincidencesAux(Ts,Is).
+findCoincidencesAux([_T|Ts],[I|Is]):-
+	I=_,
+	findCoincidencesAux(Ts,Is).
 
+fillColumns(ColumnClues,Grid,FilledC):-
+	transpose(Grid, GT),
+	fillColumnsAux(ColumnClues,GT,FilledCT),
+	transpose(FilledCT,FilledC).
 
+fillColumnsAux([],[],[]).
+fillColumnsAux([CC|CCs],[Col|Cols],[FilledC|FilledCs]):-
+	findCoincidences(CC,Col,FilledC),
+	fillColumnsAux(CCs,Cols,FilledCs).
 
+fillRows([],[],[]).
+fillRows([RC|RCs],[Row|Rows],[FilledR|FilledRs]):-
+	fillClues(RC,Row,FilledR),
+	fillRows(RCs,Rows,FilledRs).
 
-
-%%
-%
-%Aca esta todo lo que completa el tablero
-%
-%%
-% Predicado para generar todas las permutaciones posibles de una grilla de X por Y con elementos "X" y "#"
-generate_grid_permutations(_CantRow, CantCol,RC, Grid) :-
-	% La longitud de la grilla debe ser Y
-generate_rows(CantCol, CantCol,RC, Grid).         % Generar las filas de la grilla
-
-% Generar las filas de la grilla
-generate_rows(_, 0,[], []).              % Caso base: Cuando se han generado todas las filas
-generate_rows(CantRow, CantCol,[RC|RCs], [Row|RestRows]) :-
-	CantCol > 0,                            % Asegurarse de que Y sea mayor que 0
-	NewCantCol is CantCol - 1,                      % Decrementar Y en 1 para la siguiente fila
-	length(Row, CantRow),                   % La longitud de cada fila debe ser X
-	fillClues(RC, CantRow,Row), % Generar la fila
-	generate_rows(CantRow, NewCantCol,RCs, RestRows).   % Generar las filas restantes
-
-	fillClues([],PartialLine,PossibleLine):-
-		fillClues([0],PartialLine,PossibleLine).
-	fillClues([Clue|Clues],PartialLine,PossibleLine):-
-		sumElems([Clue|Clues],Sum),
-		length(PartialLine, Length),
-		Blanks is Length-Sum,
-		fillCluesAux([Clue|Clues],Blanks,PossibleLine),
-		PossibleLine = PartialLine.
+solve(Grid,RowClues,ColumnClues,SolvedGrid):-
+	copy_term(Grid, GridCopy),solveAux(GridCopy,RowClues,ColumnClues,SolvedGrid).
 	
-	fillCluesAux([],0,[]).
-	fillCluesAux([Clue|Clues],Blanks,God):-
-		fillFollowing(Clue,"#",Linea),
-		append(Linea,Bs,God),
-		fillCluesAux(Clues,Blanks,Bs),
-		( Bs =["X"|_];Bs =[]).
-	fillCluesAux(Clues,Blanks,["X"|Bs]):-
-		Blanks>0,
-		NewBlanks is Blanks-1,
-		fillCluesAux(Clues,NewBlanks,Bs).
-	
-	sumElems([],0).
-	sumElems([Clue|Clues],ClueSum):-
-		sumElems(Clues,PastSum),ClueSum is PastSum + Clue.
-	
-	fillFollowing(0,_Symbol,[]).
-	fillFollowing(Cant,Symbol,[Symbol|Elems]):-Cant>=0,NewCant is Cant-1,fillFollowing(NewCant,Symbol,Elems).
-	
-	findCoincidences(Clues,PartialLine,Coincidences):-
-		findall(PossibleLine, fillClues(Clues, PartialLine, PossibleLine), AllPossibleLines),
-		transpose(AllPossibleLines,T),
-		findCoincidencesAux(T,Coincidences).
-	
-	findCoincidencesAux([],[]).
-	findCoincidencesAux([T|Ts],[I|Is]):-
-		(forall(member(X,T),X=="#"), I="#"),!,
-		findCoincidencesAux(Ts,Is).
-	findCoincidencesAux([T|Ts],[I|Is]):-
-		(forall(member(X,T),X=="X"), I="X"),!,
-		findCoincidencesAux(Ts,Is).
-	findCoincidencesAux([_T|Ts],[I|Is]):-
-		I=_,
-		findCoincidencesAux(Ts,Is).
-	
-	fillColumns(ColumnClues,Grid,FilledC):-
-		transpose(Grid, GT),
-		fillColumnsAux(ColumnClues,GT,FilledCT),
-		transpose(FilledCT,FilledC).
-	
-	fillColumnsAux([],[],[]).
-	fillColumnsAux([CC|CCs],[Col|Cols],[FilledC|FilledCs]):-
-		findCoincidences(CC,Col,FilledC),
-		fillColumnsAux(CCs,Cols,FilledCs).
-	
-	fillRows([],[],[]).
-	fillRows([RC|RCs],[Row|Rows],[FilledR|FilledRs]):-
-		fillClues(RC,Row,FilledR),
-		fillRows(RCs,Rows,FilledRs).
-	
-	solve(Grid,RowClues,ColumnClues,SolvedGrid):-
-		fillColumns(ColumnClues,Grid,PartialRows),
-		fillColumnsAux(RowClues,PartialRows,PartialGrid),
-		Grid \==PartialRows,!,
-		solve(PartialGrid,RowClues,ColumnClues,SolvedGrid).
-	solve(Grid,RowClues,ColumnClues,PosGrid):-generateTrueAnswer(Grid,RowClues,ColumnClues,PosGrid).
-	
-	checkColumns(_Position,_Grid,[],[],1).
-	checkColumns(Position,Grid,[],[ColumnClue|ColumnClues],IsWinner):-
-		searchColumn(Position,Grid,NewColumn),
-		checkClues(ColumnClue, NewColumn,ColSat),
-		ColSat == 1, NewPosition  = Position+1,
-		checkColumns(NewPosition, Grid, [], ColumnClues, IsWinner).
-	checkColumns(_Position,_Grid,_RowClues,_ColumnClues,0).	
-	
-	generateTrueAnswer(Grid,RC,CC,PosGrid):-fillRows(RC,Grid,PosGrid),checkColumns(0,PosGrid,[],CC,1).
+solveAux(Grid,RowClues,ColumnClues,SolvedGrid):-
+	fillColumns(ColumnClues,Grid,PartialRows),
+	fillColumnsAux(RowClues,PartialRows,PartialGrid),
+	countElement(Grid,N),countElement(PartialGrid,NN),N=\=NN,!,
+	solveAux(PartialGrid,RowClues,ColumnClues,SolvedGrid).
+solveAux(Grid,RowClues,ColumnClues,PosGrid):-generateTrueAnswer(Grid,RowClues,ColumnClues,PosGrid).
+
+countElement([],0):-!.
+countElement([R|Rs],Sum):-countElement(Rs,LastSum),findall(X, (member(X, R),(X=="#";X=="X")), Sumable),length(Sumable, SumX),Sum is SumX+LastSum.
 
 
+
+copyGrid([],[]).
+copyGrid([Row|Rows],[RCopy|RCopies]):-
+	copyList(Row,RCopy),copyGrid(Rows,RCopies).
+copyList([],[]).
+copyList([E|Es],[ECopy|ECopies]):-
+	copy_term(E, ECopy),copyList(Es,ECopies).
+
+checkColumns(_Position,_Grid,[],[],1).
+checkColumns(Position,Grid,[],[ColumnClue|ColumnClues],IsWinner):-
+	searchColumn(Position,Grid,NewColumn),
+	checkClues(ColumnClue, NewColumn,ColSat),
+	ColSat == 1, NewPosition  = Position+1,
+	checkColumns(NewPosition, Grid, [], ColumnClues, IsWinner).
+checkColumns(_Position,_Grid,_RowClues,_ColumnClues,0).	
+
+generateTrueAnswer(Grid,RC,CC,PosGrid):-fillRows(RC,Grid,PosGrid),checkColumns(0,PosGrid,[],CC,1).
+
+fillUnfinished([],[],[]).
+fillUnfinished([Row|Rows],[_RC|RCs],[Row|NRows]):-isFinished(Row),!,fillUnfinished(Rows,RCs,NRows).
+fillUnfinished([Row|Rows],[RC|RCs],[NRow|NRows]):-fillClues(RC,Row,NRow),fillUnfinishedAux(Rows,RCs,NRows).
+fillUnfinishedAux([],[],[]).
+fillUnfinishedAux([Row|Rows],[_RC|RCs],[Row|NRows]):-fillUnfinishedAux(Rows,RCs,NRows).
+
+isFinished([]).
+isFinished([Elem|Elems]):-Elem\='_',isFinished(Elems).
 
 %levelX(-RowsClues, -ColsClues, Grid).
 % X hace referencia al numero
