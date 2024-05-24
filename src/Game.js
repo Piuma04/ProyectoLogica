@@ -18,7 +18,7 @@ function Game() {
   const [GameSatisfaction, setGameSatisfaction] = useState(null);
   const [highlightedClueCoords,setHighLightedClueCoords] = useState(null);
   const [currentLevel,setCurrentLevel] = useState(0);
-  const maxLevel = 3;
+  const maxLevel = 4;
   //starts the server
   useEffect(() => {
     PengineClient.init(handleServerReady);
