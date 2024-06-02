@@ -15,7 +15,7 @@ function Game() {
   //este de aca abajo te dice si esta en hint o no, configurar, podria optimizarse
   const [seeHint, setSeeHint] = useState(false);
   const [seeSolutionGrid,setSeeSolutionGrid] = useState(0);
-  const [GameSatisfaction, setGameSatisfaction] = useState(null);
+  const [GameSatisfaction, setGameSatisfaction] = useState(0);
   const [highlightedClueCoords,setHighLightedClueCoords] = useState(null);
   const [currentLevel,setCurrentLevel] = useState(0);
   const maxLevel = 4;
@@ -60,7 +60,7 @@ function Game() {
       }*/
     }
     
-  }, [grid,rowsClues,colsClues]);
+  }, [grid,rowsClues,colsClues,seeSolutionGrid]);
   //handles the click
   function handleClick(i, j) {
     if (!waiting && seeSolutionGrid === 0) {
@@ -161,7 +161,7 @@ function Game() {
     }
     };
     const beatedGameText = currentLevel === maxLevel ? "You beated the game. Press OK to reload it." : "You WON! Press OK to load the next level.";
-
+    const solutionButtonText = seeSolutionGrid === 0 ? "SEE SOLUTION" : "SEE NORMAL GRID";
 
   return (
   <CenteredContainer>
@@ -214,10 +214,10 @@ function Game() {
               </div>
             )}
           </div>
-        
+          
         </div>
-        {seeSolutionGrid === 0 && (<button className="seeSolutionButton" onClick={handleSolutionClick}>SEE SOLUTION</button>)}
-        {seeSolutionGrid === 1 && (<button className="seeSolutionButton" onClick={handleSolutionClick}>SEE NORMAL GRID</button>)}
+        
+        <button className="seeSolutionButton" onClick={handleSolutionClick}>{solutionButtonText}</button>
       </div>
     </CenteredContainer>);
 }

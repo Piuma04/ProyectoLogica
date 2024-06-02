@@ -99,12 +99,12 @@ checkWinner(_Position,_Grid,[],[],1).
 
 checkWinner(Position,Grid,RowClues,ColumnClues,IsWinner):-
 	obtainLineClue(ColumnClues,ColumnClue,RestColumnClues),
-	checkWinnerCondInCol(Position, Grid, ColumnClue, RestColumnClues, ColSat),
+	checkWinnerCondInCol(Position, Grid, ColumnClue, RestColumnClues),
 	
 	obtainLineClue(RowClues,RowClue,RestRowClues),
-	checkWinnerCondInRow(Position, Grid, RowClue, RestRowClues,RowSat),
+	checkWinnerCondInRow(Position, Grid, RowClue, RestRowClues),
 
-	RowSat == 1, ColSat == 1, NewPosition  is Position+1,
+	NewPosition  is Position+1,
 	checkWinner(NewPosition, Grid, RestRowClues, RestColumnClues, IsWinner).
 %base failure case
 checkWinner(_Position,_Grid,_RowClues,_ColumnClues,0).	
@@ -114,16 +114,16 @@ obtainLineClue([],[],[]).
 obtainLineClue([ColumnClue|RestColumnClues],ColumnClue,RestColumnClues).
 
 %checkWinnerCondInCol(+Position, +Grid, +ColumnClue, +ColumnLength, -ColSat)
-checkWinnerCondInCol(_Position, _Grid, [], [], 1).
-checkWinnerCondInCol(Position, Grid, ColumnClue, _ColumnClues,ColSat):-
+checkWinnerCondInCol(_Position, _Grid, [], []).
+checkWinnerCondInCol(Position, Grid, ColumnClue, _ColumnClues):-
 	searchColumn(Position,Grid,NewColumn), 
-	checkClues(ColumnClue, NewColumn,ColSat).
+	checkClues(ColumnClue, NewColumn,1).
 
 %checkWinnerCondInRow(+Position, +Grid, +RowClue, +RowLength, -RowSat)
-checkWinnerCondInRow(_Position, _Grid, [],[], 1).
-checkWinnerCondInRow(Position, Grid, RowClue,_RowClues, RowSat):-
+checkWinnerCondInRow(_Position, _Grid, [],[]).
+checkWinnerCondInRow(Position, Grid, RowClue,_RowClues):-
 	searchIndex(Position,Grid,NewRow),
-	checkClues(RowClue, NewRow,RowSat).
+	checkClues(RowClue, NewRow,1).
 
 %Completar tablero metodos
 
