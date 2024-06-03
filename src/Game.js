@@ -165,7 +165,9 @@ function Game() {
 
   return (
   <CenteredContainer>
-      <p className='levelLabel'>Level {currentLevel}</p>
+          <p className='levelIndicator'>
+            <span className='spanLI'>Level {currentLevel}</span>
+          </p>
       <div>
         <div className="game">
           {/*solucion temporal, encontar algo mejor*/}
@@ -219,7 +221,12 @@ function Game() {
         
         
       </div>
-      <button className="seeSolutionButton" onClick={handleSolutionClick}>{solutionButtonText}</button>
+      
+      <button type="solutionButton" class="solutionButton" onClick={handleSolutionClick}>
+        <div class="solutionButton-top">{solutionButtonText}</div>
+        <div class="solutionButton-bottom"></div>
+        <div class="solutionButton-base"></div>
+      </button>
     </CenteredContainer>);
 }
 export default Game;
