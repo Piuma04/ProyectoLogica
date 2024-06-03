@@ -178,15 +178,15 @@ function Game() {
             highlightedClueCoords={highlightedClueCoords}
           />
           <div className="levelsGrid">
-        {Array.from({ length: maxLevel+1 }, (_, index) => (
-          <div key={index} className="levelLabel">
-            <button onClick={() => goToLevel(index)}>Level {index}</button>
-          </div>
-        ))}
-      </div>
+             {Array.from({ length: maxLevel+1 }, (_, index) => (
+             <div key={index} className="levelLabel">
+              <button onClick={() => goToLevel(index)}>Level {index}</button>
+             </div>
+              ))}
+           </div>
 
-        </div>
-        <div className="container" >
+         </div>
+         <div className="container" >
           <div className="game-info">
             <ModeSelector
               value={isCrossing?"X":"#"}
@@ -204,7 +204,7 @@ function Game() {
 			        </div>
 		        </div>
 	        </div>
-        </div>
+         </div>
           <div className="game-info">
             {GameSatisfaction === 0 && (<div className = "KP">Keep Playing!</div>)}
             {GameSatisfaction === 1 && (
@@ -217,8 +217,9 @@ function Game() {
           
         </div>
         
-        <button className="seeSolutionButton" onClick={handleSolutionClick}>{solutionButtonText}</button>
+        
       </div>
+      <button className="seeSolutionButton" onClick={handleSolutionClick}>{solutionButtonText}</button>
     </CenteredContainer>);
 }
 export default Game;

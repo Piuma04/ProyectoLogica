@@ -40,6 +40,7 @@ body {
   font-weight: bolder;
 }
 .okButton{
+  
   height:50px;
   width: 50px;
   text-align: center;
@@ -259,6 +260,7 @@ input:not(:checked) + .slider .Xbrush {
 
 
 .seeSolutionButton{
+  margin-right: 50px;
       justify-content: center;
       align-items: center;
 }
