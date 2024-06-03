@@ -182,7 +182,7 @@ function Game() {
           <div className="levelsGrid">
              {Array.from({ length: maxLevel+1 }, (_, index) => (
              <div key={index} className="levelLabel">
-              <button onClick={() => goToLevel(index)}>Level {index}</button>
+              <button className='buttonA' onClick={() => goToLevel(index)}>Level {index}</button>
              </div>
               ))}
            </div>
