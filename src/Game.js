@@ -123,7 +123,7 @@ function Game() {
   const handleSolutionClick= () => {
     setSeeSolutionGrid(seeSolutionGrid ? 0 : 1);
   };
-  let g = 0;
+  
   const goToLevel = (i) => {
     if(!waiting)
     {
@@ -171,7 +171,7 @@ function Game() {
           {/*solucion temporal, encontar algo mejor*/}
           
           <Board
-            grid = {g = seeSolutionGrid === 1 ? winnerGrid : grid}
+            grid = {seeSolutionGrid === 1 ? winnerGrid : grid}
             rowsClues={rowsClues}
             colsClues={colsClues}
             onClick={(i, j) => handleClick(i, j)}
