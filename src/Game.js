@@ -186,27 +186,24 @@ function Game() {
              </div>
               ))}
            </div>
+            
 
-         </div>
+        </div>
          <div className="container" >
+            <div class="toggleH" onClick={handleHintClick}>
+              <input type="checkbox"/>
+              <span class="button"></span>
+              <span class="label">☼</span>
+            </div>
+            
           <div className="game-info">
             <ModeSelector
               value={isCrossing?"X":"#"}
               changeBrush={() => setIsCrossing(!isCrossing)}
             />
           </div>
-          <div className="fx-block">
-	          <div className="toggle">
-		          <div>
-			          < input type="checkbox"
-                  id="toggles"
-                  onChange={handleHintClick}
-                  />
-			          <div data-unchecked="Hint" data-checked="No Hint">
-			        </div>
-		        </div>
-	        </div>
-         </div>
+          
+       
           <div className="game-info">
             {GameSatisfaction === 0 && (<div className = "KP">Keep Playing!</div>)}
             {GameSatisfaction === 1 && (
