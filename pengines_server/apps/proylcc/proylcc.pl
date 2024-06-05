@@ -206,11 +206,12 @@ solveAux(Grid,RowClues,ColumnClues,SolvedGrid):-
 	countElements(PartialGrid,NN),
 	N=\=NN,!,
 	solveAux(PartialGrid,RowClues,ColumnClues,SolvedGrid).
-solveAux(Grid,RowClues,ColumnClues,SolvedGrid):-fillUnfinished(Grid,RowClues,R),
+/*solveAux(Grid,RowClues,ColumnClues,SolvedGrid):-
+	fillUnfinished(Grid,RowClues,R),
 	countElements(Grid,N),
 	countElements(R,NN),
 	N=\=NN,!,
-	solveAux(R,RowClues,ColumnClues,SolvedGrid).
+	solveAux(R,RowClues,ColumnClues,SolvedGrid).*/
 solveAux(Grid,RowClues,ColumnClues,SolvedGrid):-fillPossibleGrid(RowClues,Grid,SolvedGrid),checkColumns(0,SolvedGrid,[],ColumnClues,1).
 
 %countElements(+Elems,-Sum).
