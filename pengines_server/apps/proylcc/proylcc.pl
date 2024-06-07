@@ -131,12 +131,11 @@ checkWinnerCondInRow(Position, Grid, RowClue,_RowClues):-
 fillClues([],PartialLine,PossibleLine):-
 	fillClues([0],PartialLine,PossibleLine).
 fillClues([Clue|Clues],PartialLine,PossibleLine):-
-	copy_term(PartialLine, PartialLineCopy),
+	copy_term(PartialLine, PossibleLine),
 	sumNumbers([Clue|Clues],Sum),
-	length(PartialLineCopy, Length),
+	length(PossibleLine, Length),
 	Blanks is Length-Sum,
-	fillCluesAux([Clue|Clues],Blanks,PossibleLine),
-	PossibleLine = PartialLineCopy.
+	fillCluesAux([Clue|Clues],Blanks,PossibleLine).			
 
 %fillCluesAux(+Clue,+Blanks,-PossibleLine).
 fillCluesAux([],0,[]).
@@ -198,7 +197,7 @@ fillPossibleGrid([RC|RCs],[Row|Rows],[FilledR|FilledRs]):-
 solve(Grid,RowClues,ColumnClues,SolvedGrid):-
 	advanceGrid(Grid,RowClues,ColumnClues,SolvedGrid),
 	solveAux(Grid,RowClues,ColumnClues,SolvedGrid).
-	
+
 %solveAux(+Grid,+RowClues,+ColumnClues,-SolvedGrid).
 solveAux(_Grid,_RowClues,ColumnClues,SolvedGrid):-
 	forall(member(Row,SolvedGrid),isFinished(Row)),!,
@@ -287,20 +286,20 @@ level4(
 	[[5],[7],[9],[2,1,2],[3,3],[1,1,1,1,1,1],[2,2,2,2],[1,1],[1,1],[2,2],[3,1],[5,1],[5,2],[8],[2,1,2]],
 	[[2],[1,1],[5],[2,1],[2,1,1,2],[3,2,1,4],[3,4],[4,5],[3,4],[3,1,1,4],[2,2,1,2],[2,1,2],[5,3],[1,1],[2]],
 	
-	[[_, _, _,_, _, _, _, _, _, _, _, "X", "X", "X", "X"], 
+	[[_, _, _,_, _, _, _, _, _, _, _, "X", _, _,_], 
 	["X", _, "X", "X", _, _, _, _, _, _, _, "X", _, _, "X"], 
-	["X", _, "X", _, _, _, _, _, _, _, _, _, "X", "X", "X"], 
-	["X", _, _, _, "X", "X", "X", _, "X", "X", "X", _, _, "X", "X"], 
+	["X", _, _, _, _, _, _, _, _, _, _, _,_, "X", "X"], 
+	["X", _, _, _, "X", _, "X", _, "X", _, _, _, _, "X", "X"], 
 	[_, _, _, _, _, _, "X", "X", _, _, _, "X", _, _, _], 
-	[_, "X", _, "X", "X", _, "X", "X", _, "X", _, "X", _, "X", _], 
-	["X", _, _, "X", _, _, "X", "X", _, _, _, "X", _, _, "X"], 
-	["X", "X", _, "X", "X", "X", "X", "X", "X", "X", "X", "X", _, "X", "X"], 
-	["X", "X", "X", _, "X", _, _, "X", "X", "X", "X", _, "X", "X", "X"], 
-	["X", "X", "X", "X", _, _, "X", "X", "X", _, _, "X", "X", "X", "X"], 
-	["X", "X", "X", "X", "X", "X", _, _, _, "X", "X", "X", _, "X", "X"], 
-	["X", "X", "X", "X", "X", _, _, _, _, _, "X", "X", _, "X", "X"],
-	 ["X", "X", "X", "X", "X", _, _, _, _, _, "X", _, _, "X", "X"], 
-	 ["X", "X", "X", "X", _, _, _, _, _, _, _, _, "X", "X", "X"], 
+	[_, "X", _, "X", "X", _, _, "X", _, _, _, "X", _, "X", _], 
+	[_, _, _, "X", _, _, "X", _, _, _, _, "X", _, _, "X"], 
+	[_, "X", _, _, "X", _,_, "X", _, _, "X", "X", _, "X", "X"], 
+	[_, _, "X", _, "X", _, _, _, _, "X", "X", _, _, "X", "X"], 
+	[_, _, "X", _, _, _, _, _, "X", _, _, _, _, "X", "X"], 
+	[_, _, "X", "X", _, _, _, _, _, _, "X", "X", _, "X", "X"], 
+	[_, _, _, _, _, _, _, _, _, _, _, "X", _, _, "X"],
+	 ["X", _, "X", "X", "X", _, _, _, _, _, "X", _, _, "X", "X"], 
+	 [_, _, "X", "X", _, _, _, _, _, _, _, _, "X", "X", "X"], 
 	 ["X", _, _, "X", _, _, "X", _, "X", _, _, "X", _, _, _]]
 	).
 level3(
