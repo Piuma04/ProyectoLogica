@@ -196,23 +196,27 @@ fillPossibleGrid([RC|RCs],[Row|Rows],[FilledR|FilledRs]):-
 
 %solve(+Grid,+RowClues,+ColumnClues,-SolvedGrid).
 solve(Grid,RowClues,ColumnClues,SolvedGrid):-
-	copy_term(Grid, GridCopy),solveAux(GridCopy,RowClues,ColumnClues,SolvedGrid).
+	advanceGrid(Grid,RowClues,ColumnClues,SolvedGrid),
+	solveAux(Grid,RowClues,ColumnClues,SolvedGrid).
 	
 %solveAux(+Grid,+RowClues,+ColumnClues,-SolvedGrid).
+solveAux(_Grid,_RowClues,ColumnClues,SolvedGrid):-
+	forall(member(Row,SolvedGrid),isFinished(Row)),!,
+	checkColumns(0,SolvedGrid,[],ColumnClues,1).
 solveAux(Grid,RowClues,ColumnClues,SolvedGrid):-
+	fillUnfinished(Grid,RowClues,RanGrid),
+	solve(RanGrid,RowClues,ColumnClues,SolvedGrid).
+
+%advanceGrid(+Grid,+RowClues,+ColumnClues,-SolvedGrid)
+advanceGrid(Grid,RowClues,ColumnClues,SolvedGrid):-
 	fillColumns(ColumnClues,Grid,PartialRows),
 	fillRows(RowClues,PartialRows,PartialGrid),
 	countElements(Grid,N),
 	countElements(PartialGrid,NN),
 	N=\=NN,!,
-	solveAux(PartialGrid,RowClues,ColumnClues,SolvedGrid).
-/*solveAux(Grid,RowClues,ColumnClues,SolvedGrid):-
-	fillUnfinished(Grid,RowClues,R),
-	countElements(Grid,N),
-	countElements(R,NN),
-	N=\=NN,!,
-	solveAux(R,RowClues,ColumnClues,SolvedGrid).*/
-solveAux(Grid,RowClues,ColumnClues,SolvedGrid):-fillPossibleGrid(RowClues,Grid,SolvedGrid),checkColumns(0,SolvedGrid,[],ColumnClues,1).
+	advanceGrid(PartialGrid,RowClues,ColumnClues,SolvedGrid).
+advanceGrid(Grid,_RowClues,_ColumnClues,Grid).
+
 
 %countElements(+Elems,-Sum).
 countElements([],0):-!.
@@ -228,13 +232,14 @@ checkColumns(Position,Grid,[],[ColumnClue|ColumnClues],IsWinner):-
 	checkColumns(NewPosition, Grid, [], ColumnClues, IsWinner).
 checkColumns(_Position,_Grid,_RowClues,_ColumnClues,0).	
 
-%Work in Progress
+%fillUnfinished(+Grid,+RowClues,-RanGrid)
 fillUnfinished([],[],[]).
 fillUnfinished([Row|Rows],[_RC|RCs],[CRow|NRows]):-copy_term(Row, CRow),isFinished(Row),!,fillUnfinished(Rows,RCs,NRows).
 fillUnfinished([Row|Rows],[RC|RCs],[NRow|NRows]):-fillClues(RC,Row,NRow),fillUnfinishedAux(Rows,RCs,NRows).
 fillUnfinishedAux([],[],[]).
 fillUnfinishedAux([Row|Rows],[_RC|RCs],[CRow|NRows]):-copy_term(Row, CRow),fillUnfinishedAux(Rows,RCs,NRows).
 
+%isFinished(+Line).
 isFinished([]).
 isFinished([Elem|Elems]):-Elem\='_',isFinished(Elems).
 
