@@ -61,11 +61,14 @@ function Game() {
   //updates timer
   useEffect(() => {
     let intervalId;
-    if (isRunning) {
+    if (isRunning && GameSatisfaction === 0) {
       intervalId = setInterval(() => setTime(time + 1), 10);
+    }else{
+      setIsRunning(false);
     }
+  
     return () => clearInterval(intervalId);
-  }, [isRunning, time]);
+  }, [isRunning, time, GameSatisfaction]);
 
   //handles the click
   function handleClick(i, j) {
@@ -241,6 +244,7 @@ function Game() {
             {GameSatisfaction === 0 && (<div className = "KP">Keep Playing!</div>)}
             {GameSatisfaction === 1 && (
               <div className="alert" >
+                
                 <p>{beatedGameText}</p>
                 <button className="okButton" onClick={handleOkClick}>OK</button>
               </div>
