@@ -6,6 +6,7 @@ import ModeSelector from './ModeSelector';
 let pengine;
 
 function Game() {
+
   const [grid, setGrid] = useState(null);
   const [winnerGrid, setWinnerGrid] = useState(null);
   const [rowsClues, setRowsClues] = useState(null);
@@ -18,6 +19,8 @@ function Game() {
   const [GameSatisfaction, setGameSatisfaction] = useState(0);
   const [highlightedClueCoords,setHighLightedClueCoords] = useState(null);
   const [currentLevel,setCurrentLevel] = useState(0);
+  const [time, setTime] = useState(0);
+  const [isRunning, setIsRunning] = useState(false);
   const maxLevel = 4;
   //starts the server
   useEffect(() => {
@@ -51,16 +54,19 @@ function Game() {
         }
         
       });
-      /*
-      if(winnerGrid == null){
-        const queryU = `solve(${Grid},${rowClues},${colClues},WinGrid)`
-        pengine.query(queryU, (success2, response2) => {
-          if (success2) { setWinnerGrid(response2['WinGrid']); }
-        });
-      }*/
     }
     
   }, [grid,rowsClues,colsClues,seeSolutionGrid]);
+
+  //updates timer
+  useEffect(() => {
+    let intervalId;
+    if (isRunning) {
+      intervalId = setInterval(() => setTime(time + 1), 10);
+    }
+    return () => clearInterval(intervalId);
+  }, [isRunning, time]);
+
   //handles the click
   function handleClick(i, j) {
     if (!waiting && seeSolutionGrid === 0) {
@@ -108,6 +114,7 @@ function Game() {
           setRowsClues(response['RowClues']);
           setColsClues(response['ColumClues']);
           setHighLightedClueCoords(response['GridSat']);
+          setTime(0);
         }
         setWaiting(false);
       });
@@ -128,6 +135,7 @@ function Game() {
     if(!waiting)
     {
           setCurrentLevel(i);
+          
       if(i===0)
         {
           const queryT = `init(RowClues, ColumClues, Grid),markInicialClues(Grid,RowClues,ColumClues,GridSat),solve(Grid,RowClues,ColumClues,SolvedGrid)`;
@@ -139,6 +147,7 @@ function Game() {
             setRowsClues(response['RowClues']);
             setColsClues(response['ColumClues']);
             setHighLightedClueCoords(response['GridSat']);
+            
           }
           setWaiting(false);
         });
@@ -158,19 +167,43 @@ function Game() {
           setWaiting(false);
         });
       }
+      setTime(0);
     }
     };
+
+
+    //sets the timer corectly
+    const hours = Math.floor(time / 360000);
+    const minutes = Math.floor((time % 360000) / 6000);
+    const seconds = Math.floor((time % 6000) / 100);
+    const milliseconds = time % 100;
+    //starts and stops the timer
+    const startAndStop = () => {
+      setIsRunning(!isRunning);
+    };
+
     const beatedGameText = currentLevel === maxLevel ? "You beated the game. Press OK to reload it." : "You WON! Press OK to load the next level.";
     const solutionButtonText = seeSolutionGrid === 0 ? "SEE SOLUTION" : "SEE NORMAL GRID";
 
   return (
   <CenteredContainer>
-          <p className='levelIndicator'>
-            <span className='spanLI'>Level {currentLevel}</span>
-          </p>
+         <p className='levelIndicator'><span className='spanLI'>Level {currentLevel}</span></p>
+         <div className="stopwatch-container">
+            <p className="stopwatch-time">
+              {hours}:{minutes.toString().padStart(2, "0")}:
+              {seconds.toString().padStart(2, "0")}:
+              {milliseconds.toString().padStart(2, "0")}
+            </p>
+           <div className="stopwatch-buttons">
+          <button className="stopwatch-button" onClick={startAndStop}>
+              {isRunning ? "Stop" : "Start"}
+          </button>
+          </div>
+        </div>
+
       <div>
         <div className="game">
-          {/*solucion temporal, encontar algo mejor*/}
+          
           
           <Board
             grid = {seeSolutionGrid === 1 ? winnerGrid : grid}
