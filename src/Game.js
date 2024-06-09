@@ -11,6 +11,7 @@ function Game() {
   const [winnerGrid, setWinnerGrid] = useState(null);
   const [rowsClues, setRowsClues] = useState(null);
   const [colsClues, setColsClues] = useState(null);
+ 
   const [waiting, setWaiting] = useState(false);
   const [isCrossing, setIsCrossing] = useState(false);
   //este de aca abajo te dice si esta en hint o no, configurar, podria optimizarse
@@ -61,7 +62,7 @@ function Game() {
   //updates timer
   useEffect(() => {
     let intervalId;
-    if (isRunning && GameSatisfaction === 0) {
+    if (isRunning  && GameSatisfaction === 0) {
       intervalId = setInterval(() => setTime(time + 1), 10);
     }else{
       setIsRunning(false);
@@ -70,9 +71,9 @@ function Game() {
     return () => clearInterval(intervalId);
   }, [isRunning, time, GameSatisfaction]);
 
-  //handles the click
+  //handles the click on a square
   function handleClick(i, j) {
-    if (!waiting && seeSolutionGrid === 0) {
+    if (!waiting && isRunning & seeSolutionGrid === 0) {
     const squaresS = JSON.stringify(grid).replaceAll('""', ''); 
     const colClues = JSON.stringify(colsClues);
     const rowClues = JSON.stringify(rowsClues);
@@ -106,10 +107,11 @@ function Game() {
 
   const handleOkClick = () => {
     setCurrentLevel(currentLevel+1);
+    setIsRunning(true);
     if(waiting && currentLevel+1<=maxLevel)
     {
       const queryS = `level${currentLevel+1}(RowClues, ColumClues, Grid),markInicialClues(Grid,RowClues,ColumClues,GridSat),solve(Grid,RowClues,ColumClues,SolvedGrid)`;
-      setWaiting(true);
+      
       pengine.query(queryS, (success, response) => { 
         if (success) {
           setGrid(response['Grid']);
@@ -119,8 +121,9 @@ function Game() {
           setHighLightedClueCoords(response['GridSat']);
           setTime(0);
         }
-        setWaiting(false);
+        
       });
+      setWaiting(false);
     }
     else
        window.location.reload();
@@ -130,19 +133,20 @@ function Game() {
     setSeeHint(!seeHint);
 
   };
+  
   const handleSolutionClick= () => {
     setSeeSolutionGrid(seeSolutionGrid ? 0 : 1);
   };
   
   const goToLevel = (i) => {
-    if(!waiting)
-    {
+    if(!waiting){
           setCurrentLevel(i);
-          
+          setWaiting(true);
+          setIsRunning(false);
       if(i===0)
         {
           const queryT = `init(RowClues, ColumClues, Grid),markInicialClues(Grid,RowClues,ColumClues,GridSat),solve(Grid,RowClues,ColumClues,SolvedGrid)`;
-          setWaiting(true);
+         
           pengine.query(queryT, (success, response) => { 
           if (success) {
             setGrid(response['Grid']);
@@ -152,13 +156,13 @@ function Game() {
             setHighLightedClueCoords(response['GridSat']);
             
           }
-          setWaiting(false);
+          
         });
         }
       else
       {
         const queryS = `level${i}(RowClues, ColumClues, Grid),markInicialClues(Grid,RowClues,ColumClues,GridSat),solve(Grid,RowClues,ColumClues,SolvedGrid)`;
-        setWaiting(true);
+        
         pengine.query(queryS, (success, response) => { 
           if (success) {
             setGrid(response['Grid']);
@@ -167,22 +171,26 @@ function Game() {
             setColsClues(response['ColumClues']);
             setHighLightedClueCoords(response['GridSat']);
           }
-          setWaiting(false);
+          
         });
-      }
+       }
+      setWaiting(false);
       setTime(0);
     }
     };
 
 
-    //sets the timer corectly
+    //sets the time corectly
     const hours = Math.floor(time / 360000);
     const minutes = Math.floor((time % 360000) / 6000);
     const seconds = Math.floor((time % 6000) / 100);
     const milliseconds = time % 100;
+
     //starts and stops the timer
     const startAndStop = () => {
+      if(!waiting){
       setIsRunning(!isRunning);
+      }
     };
 
     const beatedGameText = currentLevel === maxLevel ? "You beated the game. Press OK to reload it." : "You WON! Press OK to load the next level.";
