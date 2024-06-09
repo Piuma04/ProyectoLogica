@@ -137,6 +137,9 @@ function Game() {
   const handleSolutionClick= () => {
     setSeeSolutionGrid(seeSolutionGrid ? 0 : 1);
   };
+  const handleSolveClick= () => {
+    if(!waiting)setGrid(winnerGrid);
+  };
   
   const goToLevel = (i) => {
     if(!waiting){
@@ -194,6 +197,7 @@ function Game() {
     };
 
     const beatedGameText = currentLevel === maxLevel ? "You beated the game. Press OK to reload it." : "You WON! Press OK to load the next level.";
+   
     const solutionButtonText = seeSolutionGrid === 0 ? "SEE SOLUTION" : "SEE NORMAL GRID";
 
   return (
@@ -268,6 +272,9 @@ function Game() {
         <div class="solutionButton-top">{solutionButtonText}</div>
         <div class="solutionButton-bottom"></div>
         <div class="solutionButton-base"></div>
+      </button>
+
+      <button class="btn" onClick={handleSolveClick}> SOLVE GRID
       </button>
     </CenteredContainer>);
 }
