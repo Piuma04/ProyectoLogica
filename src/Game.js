@@ -79,6 +79,7 @@ function Game() {
     const rowClues = JSON.stringify(rowsClues);
     const content = isCrossing?'X':'#';
     let queryS;
+    setWaiting(true);
     if(!seeHint){
      queryS = `put("${content}", [${i},${j}], ${rowClues}, ${colClues},${squaresS}, ResGrid, RowSat, ColSat)`; 
     }
@@ -88,11 +89,11 @@ function Game() {
        queryS = `generateGridWithHint([${i},${j}], ${rowClues}, ${colClues}, ${squaresS}, ${winGrid}, ResGrid, RowSat, ColSat)`;
        
     }
-      setWaiting(true);
+     
       pengine.query(queryS, (success, response) => {
       
         if (success) {
-          console.log(response['ResGrid']);
+      
           setGrid(response['ResGrid']);
           highlightedClueCoords[0][i] = response['RowSat'];
           highlightedClueCoords[1][j] = response['ColSat'];
@@ -116,6 +117,7 @@ function Game() {
         if (success) {
           setGrid(response['Grid']);
           setWinnerGrid(response['SolvedGrid'])
+          setGameSatisfaction(0)
           setRowsClues(response['RowClues']);
           setColsClues(response['ColumClues']);
           setHighLightedClueCoords(response['GridSat']);
@@ -138,7 +140,17 @@ function Game() {
     setSeeSolutionGrid(seeSolutionGrid ? 0 : 1);
   };
   const handleSolveClick= () => {
-    if(!waiting)setGrid(winnerGrid);
+    if(!waiting && seeSolutionGrid === 0){
+      setGrid(winnerGrid);
+      const squaresS2 = JSON.stringify(winnerGrid).replaceAll('""', '');
+      const colClues = JSON.stringify(colsClues);
+      const rowClues = JSON.stringify(rowsClues);   
+      const queryT = `markInicialClues( ${squaresS2}, ${rowClues}, ${colClues},GridSat)`;
+      
+          pengine.query(queryT, (success, response) => { 
+          if (success) { setHighLightedClueCoords(response['GridSat']); } 
+        });
+    }
   };
   
   const goToLevel = (i) => {
@@ -146,10 +158,9 @@ function Game() {
           setCurrentLevel(i);
           setWaiting(true);
           setIsRunning(false);
-      if(i===0)
-        {
-          const queryT = `init(RowClues, ColumClues, Grid),markInicialClues(Grid,RowClues,ColumClues,GridSat),solve(Grid,RowClues,ColumClues,SolvedGrid)`;
-         
+          let queryT; 
+      if(i===0) { queryT = `init(RowClues, ColumClues, Grid),markInicialClues(Grid,RowClues,ColumClues,GridSat),solve(Grid,RowClues,ColumClues,SolvedGrid)`;}
+      else { queryT = `level${i}(RowClues, ColumClues, Grid),markInicialClues(Grid,RowClues,ColumClues,GridSat),solve(Grid,RowClues,ColumClues,SolvedGrid)`;}
           pengine.query(queryT, (success, response) => { 
           if (success) {
             setGrid(response['Grid']);
@@ -161,22 +172,7 @@ function Game() {
           }
           
         });
-        }
-      else
-      {
-        const queryS = `level${i}(RowClues, ColumClues, Grid),markInicialClues(Grid,RowClues,ColumClues,GridSat),solve(Grid,RowClues,ColumClues,SolvedGrid)`;
         
-        pengine.query(queryS, (success, response) => { 
-          if (success) {
-            setGrid(response['Grid']);
-            setWinnerGrid(response['SolvedGrid']);
-            setRowsClues(response['RowClues']);
-            setColsClues(response['ColumClues']);
-            setHighLightedClueCoords(response['GridSat']);
-          }
-          
-        });
-       }
       setWaiting(false);
       setTime(0);
     }
@@ -238,10 +234,10 @@ function Game() {
 
         </div>
          <div className="container" >
-            <div class="toggleH" onClick={handleHintClick}>
+            <div className="toggleH" onClick={handleHintClick}>
               <input type="checkbox"/>
-              <span class="button"></span>
-              <span class="label">☼</span>
+              <span className="button"></span>
+              <span className="label">☼</span>
             </div>
             
           <div className="game-info">
@@ -268,13 +264,13 @@ function Game() {
         
       </div>
       
-      <button type="solutionButton" class="solutionButton" onClick={handleSolutionClick}>
-        <div class="solutionButton-top">{solutionButtonText}</div>
-        <div class="solutionButton-bottom"></div>
-        <div class="solutionButton-base"></div>
+      <button type="solutionButton" className="solutionButton" onClick={handleSolutionClick}>
+        <div className="solutionButton-top">{solutionButtonText}</div>
+        <div className="solutionButton-bottom"></div>
+        <div className="solutionButton-base"></div>
       </button>
 
-      <button class="btn" onClick={handleSolveClick}> SOLVE GRID
+      <button className="btn" onClick={handleSolveClick}> SOLVE GRID
       </button>
     </CenteredContainer>);
 }
