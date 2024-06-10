@@ -125,7 +125,7 @@ checkWinnerCondInRow(Position, Grid, RowClue,_RowClues):-
 	searchIndex(Position,Grid,NewRow),
 	checkClues(RowClue, NewRow,1).
 
-%Completar tablero metodos
+%Complete Grid
 
 %fillClues(+Clue,+PartialLine,-PossibleLine).
 fillClues([],PartialLine,PossibleLine):-
@@ -186,12 +186,6 @@ fillRows([],[],[]).
 fillRows([RC|RCs],[R|Rs],[FilledR|FilledRs]):-
 	findCoincidences(RC,R,FilledR),
 	fillRows(RCs,Rs,FilledRs).
-
-%fillPossibleGrid(+RowClues,+Grid,-FilledPossibleGrid).
-fillPossibleGrid([],[],[]).
-fillPossibleGrid([RC|RCs],[Row|Rows],[FilledR|FilledRs]):-
-	fillClues(RC,Row,FilledR),
-	fillPossibleGrid(RCs,Rows,FilledRs).
 
 %solve(+Grid,+RowClues,+ColumnClues,-SolvedGrid).
 solve(Grid,RowClues,ColumnClues,SolvedGrid):-
