@@ -198,6 +198,7 @@ function Game() {
 
   return (
   <CenteredContainer>
+          <p className='warning'>AVISO! PARA MODIFICAR EL TABLERO, ES NECESARIO ARRANCAR EL CRONOMETRO</p>
          <p className='levelIndicator'><span className='spanLI'>Level {currentLevel}</span></p>
          <div className="stopwatch-container">
             <p className="stopwatch-time">

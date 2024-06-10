@@ -3,6 +3,10 @@
 * {
   box-sizing: border-box;
 }
+.warning{
+background-color: red;
+font-size: 25px;
+}
 
 body {
   font-family: sans-serif;
