@@ -189,30 +189,29 @@ fillRows([RC|RCs],[R|Rs],[FilledR|FilledRs]):-
 
 %solve(+Grid,+RowClues,+ColumnClues,-SolvedGrid).
 solve(Grid,RowClues,ColumnClues,SolvedGrid):-
-	advanceGrid(Grid,RowClues,ColumnClues,SolvedGrid),
-	solveAux(Grid,RowClues,ColumnClues,SolvedGrid).
+	advanceGrid(Grid,RowClues,ColumnClues,AdvancedGrid),
+	solveAux(AdvancedGrid,RowClues,ColumnClues,SolvedGrid).
 
 %solveAux(+Grid,+RowClues,+ColumnClues,-SolvedGrid).
-solveAux(_Grid,_RowClues,ColumnClues,SolvedGrid):-
-	forall(member(Row,SolvedGrid),isFinished(Row)),!,
-	checkColumns(0,SolvedGrid,[],ColumnClues,1).
+solveAux(Grid,RowClues,ColumnClues,Grid):-
+	forall(member(Row,Grid),isFinished(Row)),!,
+	checkColumns(0,Grid,[],ColumnClues,1).
 solveAux(Grid,RowClues,ColumnClues,SolvedGrid):-
 	fillUnfinished(Grid,RowClues,RanGrid),
 	solve(RanGrid,RowClues,ColumnClues,SolvedGrid).
 
-%advanceGrid(+Grid,+RowClues,+ColumnClues,-SolvedGrid)
-advanceGrid(Grid,RowClues,ColumnClues,SolvedGrid):-
+%advanceGrid(+Grid,+RowClues,+ColumnClues,-AdvancedGrid)
+advanceGrid(Grid,RowClues,ColumnClues,AdvancedGrid):-
 	fillColumns(ColumnClues,Grid,PartialRows),
 	fillRows(RowClues,PartialRows,PartialGrid),
 	countElements(Grid,N),
 	countElements(PartialGrid,NN),
 	N=\=NN,!,
-	advanceGrid(PartialGrid,RowClues,ColumnClues,SolvedGrid).
-advanceGrid(Grid,_RowClues,_ColumnClues,Grid).
-
+	advanceGrid(PartialGrid,RowClues,ColumnClues,AdvancedGrid).
+advanceGrid(Grid,_RowClues,_ColumnClues,AdvancedGrid):-copy_term(Grid, AdvancedGrid).
 
 %countElements(+Elems,-Sum).
-countElements([],0):-!.
+countElements([],0).
 countElements([E|Es],Sum):-countElements(Es,LastSum),findall(X, (member(X, E),(X=="#";X=="X")), Sumable),length(Sumable, SumX),Sum is SumX+LastSum.
 
 
