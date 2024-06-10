@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import PengineClient from './PengineClient';
 import Board from './Board';
@@ -14,7 +15,6 @@ function Game() {
  
   const [waiting, setWaiting] = useState(false);
   const [isCrossing, setIsCrossing] = useState(false);
-  //este de aca abajo te dice si esta en hint o no, configurar, podria optimizarse
   const [seeHint, setSeeHint] = useState(false);
   const [seeSolutionGrid,setSeeSolutionGrid] = useState(0);
   const [GameSatisfaction, setGameSatisfaction] = useState(0);
