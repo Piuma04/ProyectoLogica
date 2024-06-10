@@ -193,7 +193,7 @@ solve(Grid,RowClues,ColumnClues,SolvedGrid):-
 	solveAux(AdvancedGrid,RowClues,ColumnClues,SolvedGrid).
 
 %solveAux(+Grid,+RowClues,+ColumnClues,-SolvedGrid).
-solveAux(Grid,RowClues,ColumnClues,Grid):-
+solveAux(Grid,_RowClues,ColumnClues,Grid):-
 	forall(member(Row,Grid),isFinished(Row)),!,
 	checkColumns(0,Grid,[],ColumnClues,1).
 solveAux(Grid,RowClues,ColumnClues,SolvedGrid):-
